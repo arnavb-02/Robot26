@@ -41,10 +41,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * periodic methods (other than the scheduler calls).  Instead, the structure of the robot
  * (including subsystems, commands, and button mappings) should be declared here.
  */
-public class RobotContainer 
-{
+public class RobotContainer {
 	// Subsystems.
-
 	public static ShuffleBoard			 shuffleBoard;
 	public static DriveBase				 driveBase;
     public static VisionSubsystem        visionSubsystem;
@@ -53,6 +51,34 @@ public class RobotContainer
 	public final DriveCommand			 driveCommand;
 
     public TestSubsystem testSubsystem;
+
+    // General todo list for Cole Pearson
+    //
+    // Remove all compressor stuff from the code
+    // Remove any unused smartdashboard varuables
+    // Remove the candle
+    // Remove console logs that are causing radio issues
+    //
+    // Feat.
+    //
+    // Find accuracy of Limelight
+    // Test Questnav
+    // Find accuracy of Qeustnav
+    // Average between the Limelight and Questnav
+    //
+    // Add a boolean to disable the controller rotation intput to the drivebase
+    // Add a simple p-loop for heading targeting
+    // Add a little more detail into the drivebase heading target
+    //
+    // Hud swival rotation tracking and right stick intake targeting
+    //
+    // While not driveing for a little while move to x stationary
+    //
+    // When in the middle swap from hub heading targeting to left or right of the hub targeting driving
+    //
+    // Shoot on the move ability
+    //
+    //
 	
 	// Subsystem Default Commands.
 
@@ -76,8 +102,8 @@ public class RobotContainer
 	// Note that button responsiveness may be slowed as the schedulers command list gets longer 
 	// or commands get longer as buttons are processed once per scheduler run.
 	
-	private XboxController			driverController =  new XboxController(DRIVER_PAD);
-	public static XboxController	utilityController = new XboxController(UTILITY_PAD);
+	public static XboxController driverController =  new XboxController(DRIVER_PAD);
+	public static XboxController utilityController = new XboxController(UTILITY_PAD);
 
 	private PowerDistribution		pdp = new PowerDistribution(REV_PDB, PowerDistribution.ModuleType.kRev);
 
@@ -136,15 +162,12 @@ public class RobotContainer
 
 		shuffleBoard = new ShuffleBoard();
 
+        // The pigeon is setup somewhere in the drivebase function.
+        // It is important to note that the pigeon documentation says that the device does not need to be still on boot,
+        // however the documentation also says that the drift is worse when started while moving.
 		driveBase = new DriveBase();
         visionSubsystem = new VisionSubsystem(driveBase);
         questNavSubsystem = new QuestNavSubsystem(driveBase);
-
-		// if (RobotBase.isReal()) 
-		// {
-		// 	candle = new Candle(CTRE_CANDLE, 8+26);
-		// 	candle.setDefaultCommand(new UpdateCandle(candle));
-		// }
 
 		// Create any persistent commands.
 
@@ -231,8 +254,7 @@ public class RobotContainer
      * 
      * These buttons are for robot driver station with 2 Xbox or F310 controllers.
 	 */
-	private void configureButtonBindings() 
-	{
+	private void configureButtonBindings() {
 		Util.consoleLog();
 	  
 		// ------- Driver controller buttons -------------

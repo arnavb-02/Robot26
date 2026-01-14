@@ -30,8 +30,7 @@ import Team4450.Robot26.utility.RobotOrientation;
  * functions without modifyinig the SDS code generated from Tuner. Also allows for
  * convenience wrappers for more complex functions in SDS code.
  */
-public class DriveBase extends SubsystemBase
-{
+public class DriveBase extends SubsystemBase {
     private CommandSwerveDrivetrain     sdsDriveBase = TunerConstants.createDrivetrain();
 
     public PigeonWrapper                gyro = new PigeonWrapper(sdsDriveBase.getPigeon2());
@@ -47,6 +46,9 @@ public class DriveBase extends SubsystemBase
     private boolean                     neutralModeBrake = true;
     private double                      maxSpeed = kMaxSpeed * kDriveReductionPct; 
     private double                      maxRotRate = kMaxAngularRate * kRotationReductionPct;
+    private boolean headingSwivelMode;
+    private boolean ferryingSwivelMode;
+    private double headingTarget;
 
     private final SwerveRequest.SwerveDriveBrake driveBrake = new SwerveRequest.SwerveDriveBrake();
 
@@ -106,15 +108,13 @@ public class DriveBase extends SubsystemBase
         if (RobotBase.isSimulation()) driveField.ForwardPerspective = ForwardPerspectiveValue.BlueAlliance;
 		         
         // Register for SDS telemetry.
-
         sdsDriveBase.registerTelemetry(logger::telemeterize);
-;
+
         updateDS();
     }
 
     @Override
-    public void periodic() 
-    {
+    public void periodic() {
         sdsDriveBase.periodic();
 
         // update 3d simulation: look in AdvantageScope.java for more
@@ -125,6 +125,7 @@ public class DriveBase extends SubsystemBase
         // See this function for more information.
         updateModulePoses(sdsDriveBase);
 
+        // Basic telemetry
         SmartDashboard.putNumber("Gyro angle", getYaw());
         SmartDashboard.putString("Robot od pose", getPose().toString());
         if (robotPose != null) {
@@ -132,18 +133,31 @@ public class DriveBase extends SubsystemBase
         }
     }
 
-    public void drive(double throttle, double strafe, double rotation)
-    {
+    public void drive(double throttle, double strafe, double rotation) {
+        if (headingSwivelMode) {
+            // Inject rotation code into the drive command
+        }
+
         if (fieldRelativeDriving)
             sdsDriveBase.setControl(
                 driveField.withVelocityX(throttle * maxSpeed) 
                         .withVelocityY(strafe * maxSpeed) 
                         .withRotationalRate(rotation * maxRotRate));
-        else
+        else if (headingSwivelMode) {
+            // Get the angle target to the hub
+            // Calculate p-loop for targeting the hub
             sdsDriveBase.setControl(
                 driveRobot.withVelocityX(throttle * maxSpeed) 
                         .withVelocityY(strafe * maxSpeed) 
                         .withRotationalRate(rotation * maxRotRate));
+        } else if (ferryingSwivelMode) {
+            // Figure out to target left or right of the hub based on the y
+            // Calculate the p-loop for targeting
+            sdsDriveBase.setControl(
+                driveRobot.withVelocityX(throttle * maxSpeed) 
+                        .withVelocityY(strafe * maxSpeed) 
+                        .withRotationalRate(rotation * maxRotRate));
+        }
 
         SmartDashboard.putNumber("Drive Velocity X", driveField.VelocityX);
         SmartDashboard.putNumber("Drive Velocity Y", driveField.VelocityY);

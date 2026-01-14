@@ -9,8 +9,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 /**
  * Wrapper class for Pigeon2 gyro.
  */
-public class PigeonWrapper extends SubsystemBase
-{
+public class PigeonWrapper extends SubsystemBase {
     public Pigeon2      pigeon;
     private double      startingYaw;
 
