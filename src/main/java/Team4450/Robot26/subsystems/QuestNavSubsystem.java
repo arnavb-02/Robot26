@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import gg.questnav.questnav.PoseFrame;
 import gg.questnav.questnav.QuestNav;
 import Team4450.Lib.Util;
+import Team4450.Robot26.utility.ConsoleEveryX;
 
 public class QuestNavSubsystem extends SubsystemBase {
     QuestNav questNav;
@@ -17,6 +18,9 @@ public class QuestNavSubsystem extends SubsystemBase {
     
     Pose3d robotPose = DriveConstants.DEFAULT_STARTING_POSE_3D;
     final Pose3d nullPose = new Pose3d(-1, -1, -1, Rotation3d.kZero);
+
+    ConsoleEveryX questTestLogger = new ConsoleEveryX(100);
+    ConsoleEveryX questLogger = new ConsoleEveryX(100);
 
     PoseFrame[] poseFrames;
 
@@ -68,7 +72,8 @@ public class QuestNavSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (questNav.isTracking()) {
+        questTestLogger.update("Quest periodic");
+        if (questNav.isConnected()) { // Is tracking was returning false
             // This method will be called once per scheduler run
             questNav.commandPeriodic();
 
@@ -79,6 +84,7 @@ public class QuestNavSubsystem extends SubsystemBase {
             if(Constants.UPDATE_QUESTNAV) {
                 for (PoseFrame questFrame : poseFrames) {
                     // The dataTimestamp is in seconds
+                    questLogger.update(questFrame.questPose3d().toPose2d().toString());
                     drivebase.addVisionMeasurement(questFrame.questPose3d().toPose2d(), questFrame.dataTimestamp());
                 }
             }

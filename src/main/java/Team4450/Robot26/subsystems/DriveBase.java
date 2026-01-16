@@ -35,7 +35,7 @@ public class DriveBase extends SubsystemBase {
     private CommandSwerveDrivetrain     sdsDriveBase = TunerConstants.createDrivetrain();
 
     public PigeonWrapper                gyro = new PigeonWrapper(sdsDriveBase.getPigeon2());
-    public Pose2d robotPose = null;
+    public Pose2d robotPose = new Pose2d(0, 0, Rotation2d.kZero);
     
     private final Telemetry     		logger = new Telemetry(kMaxSpeed);
     // Field2d object creates the field display on the simulation and gives us an API
@@ -130,7 +130,7 @@ public class DriveBase extends SubsystemBase {
         SmartDashboard.putNumber("Gyro angle", getYaw());
         SmartDashboard.putString("Robot od pose", getPose().toString());
         if (robotPose != null) {
-            SmartDashboard.putString("Robot pose pose pose pose", robotPose.toString());
+            SmartDashboard.putString("Robot pose", robotPose.toString());
         }
     }
 
