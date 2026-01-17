@@ -5,9 +5,6 @@ import Team4450.Robot26.Constants;
 import Team4450.Robot26.utility.RobotOrientation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.lang.Math;
-import Team4450.Robot26.utility.VisionBuffer;
-import Team4450.Robot26.utility.VisionPose;
-import edu.wpi.first.math.geometry.Pose2d;
 
 public class VisionSubsystem extends SubsystemBase {
     // Info from: https://docs.limelightvision.io/docs/docs-limelight/pipeline-apriltag/apriltags
@@ -52,9 +49,13 @@ public class VisionSubsystem extends SubsystemBase {
         
         zeroLimelightIMU(rO);
 
-        Util.consoleLog("Init Limelight Left");
+    }
+
+    public void enableInternalIMU() {
+        RobotOrientation rO = drivebase.getRobotOrientation(); // IDK if RobotOrientation works correctly, look there to see
+        Util.consoleLog("Init Limelight Internal IMU Left");
         LimelightHelpers.SetRobotOrientation(Constants.LIMELIGHT_LEFT, rO.yaw, rO.yawRate, rO.pitch, rO.pitchRate, rO.roll, rO.rollRate);
-        Util.consoleLog("Init Limelight Right");
+        Util.consoleLog("Init Limelight Internal IMU Right");
         LimelightHelpers.SetRobotOrientation(Constants.LIMELIGHT_RIGHT, rO.yaw, rO.yawRate, rO.pitch, rO.pitchRate, rO.roll, rO.rollRate);
         // IMU mode 2 uses to Limelight 4 internal IMU
         LimelightHelpers.SetIMUMode(Constants.LIMELIGHT_LEFT, 2);

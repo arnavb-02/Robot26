@@ -218,7 +218,6 @@ public class RobotContainer {
         new Thread(() -> {
             try {
                 Timer.delay(30);    
-
                 DriverStation.silenceJoystickConnectionWarning(true);
             } catch (Exception e) { }
         }).start();

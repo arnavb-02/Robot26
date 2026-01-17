@@ -4,8 +4,8 @@ package Team4450.Robot26;
 import static Team4450.Robot26.Constants.*;
 
 import Team4450.Lib.*;
+import Team4450.Robot26.utility.RobotOrientation;
 import Team4450.Robot26.wpilib.TimedRobot;
-import Team4450.Robot26.subsystems.LimelightHelpers;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -169,7 +169,7 @@ public class Robot extends TimedRobot
       this.endCompetition();
     }
 
-		if (tracing & isEnabled()) FunctionTracer.INSTANCE.exitFunction("Robot.robotPeriodic");
+    if (tracing & isEnabled()) FunctionTracer.INSTANCE.exitFunction("Robot.robotPeriodic");
   }
 
   /**
@@ -186,6 +186,11 @@ public class Robot extends TimedRobot
     //RobotContainer.driveBase.stop(); rich
 
     // Reset driver station LEDs.
+    //
+    // Set Limelight IMU mode to 1
+    // I don't really like calling this here, but something can only be disabled after enabled has ran so everything should exist
+    RobotOrientation rO = RobotContainer.driveBase.getRobotOrientation(); // IDK if RobotOrientation works correctly, look there to see
+    RobotContainer.visionSubsystem.zeroLimelightIMU(rO);
 
     RobotContainer.shuffleBoard.resetLEDs();
 
@@ -260,6 +265,9 @@ public class Robot extends TimedRobot
 
     SmartDashboard.putBoolean("Disabled", false);
     SmartDashboard.putBoolean("Teleop Mode", true);
+
+    // Set Limelight imu mode to 2
+    RobotContainer.visionSubsystem.enableInternalIMU();
 
     //robotContainer.fixPathPlannerGyro(); rich // Because of this only use blue alliance during practice
 
