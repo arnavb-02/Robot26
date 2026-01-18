@@ -32,6 +32,7 @@ public class VisionSubsystem extends SubsystemBase {
     // SetRobotOrientation assumes a centered (see the map generator) or blue-corner origin. CCW-positive, 0 degrees -> facing red alliance wall in FRC.
     //
     DriveBase drivebase;
+    boolean enabled = false;
     int i = 0;
 
     public VisionSubsystem(DriveBase drivebase) {
@@ -58,6 +59,9 @@ public class VisionSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        if (!enabled) {
+            return;
+        }
         // How to stpo this when disabled
         i++;
         boolean useLeftLimelight = true;

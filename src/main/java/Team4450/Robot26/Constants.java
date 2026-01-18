@@ -63,9 +63,9 @@ public final class Constants {
     public static String LIMELIGHT_RIGHT = "limelight-right";
     // Add limelight right offset
 
-    public static double ROBOT_TO_QUEST_X = 0.3;
-    public static double ROBOT_TO_QUEST_Y = 0.3;
-    public static double ROBOT_TO_QUEST_Z = 0.3;
+    public static double ROBOT_TO_QUEST_X = 0.304;
+    public static double ROBOT_TO_QUEST_Y = 0;
+    public static double ROBOT_TO_QUEST_Z = 0;
 
     public static int VISION_BUFFER_SIZE = 1;
 
@@ -122,8 +122,6 @@ public final class Constants {
     // public static double ROBOT_HEADING_MAX_OUTPUT = 1;
 
     public static double FLYWHEEL_MAX_THEORETICAL_RPM = 4000;
-
-    public static boolean UPDATE_QUESTNAV = true;
 
     // Interpolation table
     public static double[] FLYWHEEL_SPEED_TABLE = {0.57, 0.595, 0.69, 0.715, 0.73, 0.82, 0.86};
@@ -182,8 +180,10 @@ public final class Constants {
         // Factors used to reduce robot max speed to levels desired for lab/demo operation.
         // The split below matches the rotation speed to drive speed. Needs to be tuned for
         // full weight robot.
-        public static final double kDriveReductionPct = .50; // 50% of max linear speed.
-        public static final double kRotationReductionPct = .70; // 70% of max rotational speed.
+        // public static final double kDriveReductionPct = .50; // 50% of max linear speed.
+        // public static final double kRotationReductionPct = .70; // 70% of max rotational speed.
+        public static final double kDriveReductionPct = .20; // 50% of max linear speed.
+        public static final double kRotationReductionPct = .30; // 70% of max rotational speed.
 
         // Factors used to slow robot speed for fine driving.
         public static final double kSlowModeLinearPct = .15; // 15% of max linear speed.
