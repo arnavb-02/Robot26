@@ -155,6 +155,69 @@ public final class Constants {
     // Default open-loop start percent for flywheel when controlled by code only (0.0 - 1.0)
     public static final double FLYWHEEL_DEFAULT_START_PERCENT = 0.5; // 50% output
 
+    // Flywheel motor / PID and feedforward tuning constants (used by onboard TalonFX closed-loop)
+    // CAN ID for flywheel TalonFX
+    public static final int FLYWHEEL_MOTOR_CAN_ID = 10; // matches existing TestSubsystem default
+
+    // Closed-loop slot selection
+    public static final int FLYWHEEL_PID_SLOT = 0;
+
+    // Feedforward-ish gains (units used by Phoenix6 API: kV/kA in Volts/(rot/s) and Volts/(rot/s/s),
+    // kS in Volts). Start conservative and tune on the robot/Phoenix Tuner.
+    public static final double FLYWHEEL_kS = 0.25;   // static friction voltage (V)
+    public static final double FLYWHEEL_kV = 0.12;   // volts per rps (V / rps)
+    public static final double FLYWHEEL_kA = 0.00;   // volts per (rps/s) (V / (rps/s))
+
+    // PID gains for velocity closed-loop (these are in Volt-output PID units used by Phoenix)
+    public static final double FLYWHEEL_kP = 0.11;
+    public static final double FLYWHEEL_kI = 0.0;
+    public static final double FLYWHEEL_kD = 0.0;
+
+    // Motion Magic / Motion profiling defaults (if you later want MotionMagic Velocity)
+    public static final boolean FLYWHEEL_USE_MOTION_MAGIC_VELOCITY = false; // leave false to use basic velocity control
+    public static final double FLYWHEEL_MOTION_ACCEL_RPMS = 2000.0; // RPM/s used by motion magic (convert to rps/s internally)
+    public static final double FLYWHEEL_MOTION_JERK = 0.0; // optional jerk
+
+    // Grouped flywheel tuning constants (single place to find PID + feedforward)
+    // Edit these values when tuning the flywheel. These are the authoritative
+    // values used for on-device TalonFX closed-loop control (kS/kV/kA in Volts,
+    // kP/kI/kD for the velocity PID slot).
+    public static final class Flywheel {
+        // CAN ID for flywheel TalonFX
+        public static final int MOTOR_CAN_ID = 10; // matches existing TestSubsystem default
+
+        // Closed-loop slot selection
+        public static final int PID_SLOT = 0;
+
+        // Feedforward-ish gains (units used by Phoenix6 API: kV/kA in Volts/(rot/s) and Volts/(rot/s/s),
+        // kS in Volts). Start conservative and tune on the robot/Phoenix Tuner.
+        public static final double kS = 0.25;   // static friction voltage (V)
+        public static final double kV = 0.12;   // volts per rps (V / rps)
+        public static final double kA = 0.00;   // volts per (rps/s) (V / (rps/s))
+
+        // PID gains for velocity closed-loop (these are in Volt-output PID units used by Phoenix)
+        public static final double kP = 0.11;
+        public static final double kI = 0.0;
+        public static final double kD = 0.0;
+
+        // Default target RPM for flywheel (used as a manual override/starting value)
+        public static final double DEFAULT_TARGET_RPM = 1000.0;
+
+        // Default flywheel acceleration in RPM per second (used for ramping if implemented)
+        public static final double DEFAULT_ACCEL_RPMS = 5000.0;
+
+        // Default open-loop start percent for flywheel when controlled by code only (0.0 - 1.0)
+        public static final double DEFAULT_START_PERCENT = 0.5; // 50% output
+
+        // Motion Magic / Motion profiling defaults (if you later want MotionMagic Velocity)
+        public static final boolean USE_MOTION_MAGIC_VELOCITY = false; // leave false to use basic velocity control
+        public static final double MOTION_ACCEL_RPMS = 2000.0; // RPM/s used by motion magic (convert to rps/s internally)
+        public static final double MOTION_JERK = 0.0; // optional jerk
+
+        // theoretical limits (for telemetry/approximation)
+        public static final double MAX_THEORETICAL_RPM = 4000.0;
+    }
+
     // What is the LCD
 	// LCD display line number constants showing class where the line is set.
 	public static final int		LCD_1 = 1;	    // Robot, Auto Commands.
