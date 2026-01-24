@@ -125,6 +125,16 @@ public class DriveCommand extends Command
         } else {
             targetHeading = -Math.toDegrees(Math.atan2(rotationYSupplier.getAsDouble(), rotationXSupplier.getAsDouble()));
         }
+        
+        SmartDashboard.putNumber("Target Heading", targetHeading);
+
+        // Adjusts for static friction, an F variable would also be an option but this works well
+        double error = -targetHeading - drivebase.getYaw180();
+        if (error > ROBOT_HEADING_TOLERANCE_DEG) {
+            targetHeading -= (3 * Math.signum(error));
+        }
+
+        SmartDashboard.putNumber("Heading Error", error);
 
         // Uses a PID and the previous assigned target heading to rotate there
         double rotation = -headingPID.calculate(drivebase.getYaw180(), -targetHeading);
@@ -144,6 +154,8 @@ public class DriveCommand extends Command
         rotationLog.update("Heading PID rotation output: " + String.valueOf(rotation));
 
         headingPID.setP(SmartDashboard.getNumber("Heading P", Constants.ROBOT_HEADING_KP));
+        headingPID.setI(SmartDashboard.getNumber("Heading I", Constants.ROBOT_HEADING_KI));
+        headingPID.setD(SmartDashboard.getNumber("Heading D", Constants.ROBOT_HEADING_KD));
 
         drivebase.drive(throttle, strafe, rotation);
     }
