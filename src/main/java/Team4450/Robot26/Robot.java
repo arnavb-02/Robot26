@@ -11,7 +11,6 @@ import Team4450.Robot26.wpilib.TimedRobot;
 //import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.WPILibVersion;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -46,7 +45,7 @@ public class Robot extends TimedRobot
 
       // Set up our custom logger.
 
-      Util.CustomLogger.setup();
+      Util.CustomLogger.setup(true);
 
       // The wpilib classes that underlie this class generate a lot of warning
       // messages that flood the Riolog and make it almost unusable. The warnings 

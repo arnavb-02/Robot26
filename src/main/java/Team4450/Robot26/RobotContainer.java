@@ -210,7 +210,7 @@ public class RobotContainer
 		monitorPDPThread = MonitorPDP.getInstance(pdp);
 		monitorPDPThread.start();
 		
-		//pdp.setSwitchableChannel(true);
+		pdp.setSwitchableChannel(true);
 		
 		// Start camera server thread using our class for usb cameras.
     

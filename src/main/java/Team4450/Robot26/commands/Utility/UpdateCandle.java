@@ -58,7 +58,7 @@ public class UpdateCandle extends Command {
      * @param color the first color
      * @param color2 the second color (or null for off)
      */
-    private void blink(Color color, Color color2) {
+    public void blink(Color color, Color color2) {
         if (Util.getElaspedTime(time) % 0.2 < 0.1) {
             candle.setLeds(color);
         } else if (color2 == null) {
@@ -72,7 +72,7 @@ public class UpdateCandle extends Command {
      * Blink the CANdle between the given color and off
      * @param color the color
      */
-    private void blink(Color color) {
+    public void blink(Color color) {
         blink(color, null);
     }
 

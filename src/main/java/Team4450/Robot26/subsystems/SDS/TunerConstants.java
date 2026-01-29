@@ -1,5 +1,6 @@
 package Team4450.Robot26.subsystems.SDS;
 
+import static Team4450.Robot26.Constants.CANIVORE_NAME;
 import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.CANBus;
@@ -75,7 +76,7 @@ public class TunerConstants {
 
     // CAN bus that the devices are located on;
     // All swerve devices must share the same CAN bus
-    public static final CANBus kCANBus = new CANBus("rio", "./logs/example.hoot");
+    public static final CANBus kCANBus = new CANBus(CANIVORE_NAME, "./logs/example.hoot"); // 4450
 
     // Theoretical free speed (m/s) at 12 V applied output;
     // This needs to be tuned to your individual robot based on physical configuration.

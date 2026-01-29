@@ -2,8 +2,6 @@ package Team4450.Robot26.utility;
 
 import java.util.ArrayList;
 
-import com.ctre.phoenix6.swerve.SwerveModule;
-
 import Team4450.Robot26.subsystems.SDS.CommandSwerveDrivetrain;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
