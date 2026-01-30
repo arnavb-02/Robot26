@@ -21,7 +21,7 @@ Version 26.2.0
 *   Added support for Canivore.
 *   Added utility subsystems TalonFXVelocityController and TalonFXPositionController.
 
-R. Corn, January 27 2026
+R. Corn, January 29 2026
 
 Version 26.1.0
 
