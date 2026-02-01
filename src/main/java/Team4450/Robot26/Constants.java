@@ -21,8 +21,9 @@ import edu.wpi.first.wpilibj.DriverStation;
  * <p>It is advised to statically import this class (or one of its inner classes) wherever the
  * constants are needed, to reduce verbosity.
  */
-public final class Constants {
-	public static String		PROGRAM_NAME = "ORF26-01.29.26";
+public final class Constants
+{
+	public static String		PROGRAM_NAME = "ORF26-01.30.26";
 
 	public static Robot			robot;
 
