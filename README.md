@@ -4,7 +4,7 @@ FRC Team 4450 2026 Robot Control program used in competition.
 
 This is the 2026 competition robot control program created by the Olympia Robotics Federation (FRC Team 4450). 
 
-Operates the robot **TBA** for FRC game **Rebuilt**.
+Operates the robot **Helios** for FRC game **Rebuilt**.
 ----------------------------------------------------------------------------
 ### Instructions to setup development environment for VS Code
 1) Follow the instructions [here](https://docs.wpilib.org/en/stable/docs/zero-to-robot/step-2/index.html) to setup the JDK, Visual Studio Code, the FRC plugins and tools. Do not install the C++ portion. You do not need the FRC Update Suite to compile code.
@@ -17,9 +17,11 @@ Download the RobotLib.json file from the RobotLib Github repo and drop it into t
 *********************************************************************************************************
 Version 26.2.0
 
-*   Updated our private copy of WPILib IterativeRobotBase to 2026 version.
+*   Updated our private copies of WPILib IterativeRobotBase, TimedRobot and Watchdog to 2026 version.
+*   Added support for Canivore.
+*   Added utility subsystems TalonFXVelocityController and TalonFXPositionController.
 
-R. Corn, January 22 2026
+R. Corn, January 29 2026
 
 Version 26.1.0
 

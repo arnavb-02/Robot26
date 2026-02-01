@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj.DriverStation;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-	public static String		PROGRAM_NAME = "ORF26-01.26.26";
+	public static String		PROGRAM_NAME = "ORF26-01.29.26";
 
 	public static Robot			robot;
 
@@ -51,9 +51,13 @@ public final class Constants {
 	public static final double DONT_SEE_TAG_WAIT_TIME = 1;
 	public static final double POSE_VALIDATION_TIME = 0.3;
 
+    // Misc port assignments.
     public static final int     REV_PDB = 20;
     public static final int     CTRE_CANDLE = 21;
     public static final int     PIGEON_ID = 1;
+
+    // Canivore device name or "rio" if no canivore.
+    public static String        CANIVORE_NAME = "canivore";
 	
 	// GamePad port assignments.
 	public static final int		DRIVER_PAD = 0, UTILITY_PAD = 1;
