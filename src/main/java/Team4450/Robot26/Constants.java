@@ -63,6 +63,18 @@ public final class Constants
     public static int INTAKE_MOTOR_LEFT_CAN_ID = -1;
     public static int INTAKE_MOTOR_RIGHT_CAN_ID = -1;
 
+    public static int FLYWHEEL_MOTOR_TOP_LEFT_CAN_ID = -1;
+    public static int FLYWHEEL_MOTOR_TOP_RIGHT_CAN_ID = -1;
+    public static int FLYWHEEL_MOTOR_BOTTOM_RIGHT_CAN_ID = -1;
+    public static int FLYWHEEL_MOTOR_BOTTOM_LEFT_CAN_ID = -1;
+
+    public static int HOOD_MOTOR_LEFT_CAN_ID = -1;
+    public static int HOOD_MOTOR_RIGHT_CAN_ID = -1;
+
+    public static int ROLLER_MOTOR_LEFT_CAN_ID = -1;
+    public static int ROLLER_MOTOR_RIGHT_CAN_ID = -1;
+
+
     // The intake gear ratio it 1 to 1
     public static int INTAKE_GEAR_RATIO = 1 / 1;
     // I was told that the gear box on the Kraken is a 100:1
