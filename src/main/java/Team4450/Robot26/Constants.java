@@ -57,12 +57,6 @@ public final class Constants
     public static int KRAKEN_X44_MAX_THEORETICAL_RPM = 7530;
 
     // Shooter Constants
-    
-    // Intake Constants
-    public static int INTAKE_MOTOR_PIVIT_CAN_ID = -1;
-    public static int INTAKE_MOTOR_LEFT_CAN_ID = -1;
-    public static int INTAKE_MOTOR_RIGHT_CAN_ID = -1;
-
     public static int FLYWHEEL_MOTOR_TOP_LEFT_CAN_ID = -1;
     public static int FLYWHEEL_MOTOR_TOP_RIGHT_CAN_ID = -1;
     public static int FLYWHEEL_MOTOR_BOTTOM_RIGHT_CAN_ID = -1;
@@ -73,7 +67,11 @@ public final class Constants
 
     public static int ROLLER_MOTOR_LEFT_CAN_ID = -1;
     public static int ROLLER_MOTOR_RIGHT_CAN_ID = -1;
-
+    
+    // Intake Constants
+    public static int INTAKE_MOTOR_PIVIT_CAN_ID = -1;
+    public static int INTAKE_MOTOR_LEFT_CAN_ID = -1;
+    public static int INTAKE_MOTOR_RIGHT_CAN_ID = -1;
 
     // The intake gear ratio it 1 to 1
     public static int INTAKE_GEAR_RATIO = 1 / 1;

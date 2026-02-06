@@ -14,13 +14,13 @@ import com.ctre.phoenix6.CANBus;
 
 public class Shooter extends SubsystemBase {
     // This motor is a Falcon 500
-    private final TalonFX flywheelMotor_TopLeft = new TalonFX(Constants.FLYWHEEL_MOTOR_TOP_LEFT_CAN_ID, new CANBus(Constants.CANIVORE_NAME));
+    private final TalonFX flywheelMotorTopLeft = new TalonFX(Constants.FLYWHEEL_MOTOR_TOP_LEFT_CAN_ID, new CANBus(Constants.CANIVORE_NAME));
     // This motor is a Falcon 500
-    private final TalonFX flywheelMotor_TopRight = new TalonFX(Constants.FLYWHEEL_MOTOR_TOP_RIGHT_CAN_ID, new CANBus(Constants.CANIVORE_NAME));
+    private final TalonFX flywheelMotorTopRight = new TalonFX(Constants.FLYWHEEL_MOTOR_TOP_RIGHT_CAN_ID, new CANBus(Constants.CANIVORE_NAME));
     // This motor is a Falcon 500
-    private final TalonFX flywheelMotor_BottomLeft = new TalonFX(Constants.FLYWHEEL_MOTOR_BOTTOM_LEFT_CAN_ID, new CANBus(Constants.CANIVORE_NAME));
+    private final TalonFX flywheelMotorBottomLeft = new TalonFX(Constants.FLYWHEEL_MOTOR_BOTTOM_LEFT_CAN_ID, new CANBus(Constants.CANIVORE_NAME));
     // This motor is Falcon 500
-    private final TalonFX flywheelMotor_BottomRight = new TalonFX(Constants.FLYWHEEL_MOTOR_BOTTOM_RIGHT_CAN_ID, new CANBus(Constants.CANIVORE_NAME));
+    private final TalonFX flywheelMotorBottomRight = new TalonFX(Constants.FLYWHEEL_MOTOR_BOTTOM_RIGHT_CAN_ID, new CANBus(Constants.CANIVORE_NAME));
     // This motor is a Kraken x60, change CAN ID
     private final TalonFX hoodRollerLeft = new TalonFX(Constants.HOOD_MOTOR_LEFT_CAN_ID, new CANBus(Constants.CANIVORE_NAME));
     // This motor is a Kraken x60, change CAN ID
@@ -46,7 +46,8 @@ public class Shooter extends SubsystemBase {
     // (flywheel is currently controlled by TestSubsystem; no dashboard-driven flywheel tunables here)
     
 
-    private final Drivebase drivebase;
+    private Drivebase drivebase;
+
     DigitalInput beamBreak;
 
     // Constants for launch calculations
@@ -59,6 +60,7 @@ public class Shooter extends SubsystemBase {
     public Shooter(Drivebase drivebase) {
         // initialize commanded angle to whatever a reasonable default is
         this.drivebase = drivebase;
+
         beamBreak = new DigitalInput(3);
     }
 
@@ -146,7 +148,7 @@ public class Shooter extends SubsystemBase {
         // use atan2 to get teh correct angle to face goal & convert to degrees
         double angleToFaceGoal = Math.toDegrees(Math.atan(yDiff / xDiff));
 
-        return ( angleToFaceGoal - robotPosition.getRotation().getDegrees());
+        return (angleToFaceGoal - robotPosition.getRotation().getDegrees());
     }
 
     // This method sets the lower and higher points to interpolate between 
