@@ -9,23 +9,38 @@ Port	Device			Description
 Motor CAN Ports
 Port	Device			Description
 -----------------------------------------------------------------------------------
-1       TalonFX         FL drive motor.
-2       TalonFX         FL steer motor.
-3       TalonFX         FR drive motor.
-4       TalonFX         FR steer motor.
-5       TalonFX         RL drive motor.
-6       TalonFX         RL steer motor.
-7       TalonFX         RR drive motor.
-8       TalonFX         RR steer motor.
+1       TalonFX         Swerve: Front Left Drive Motor.
+2       TalonFX         Swerve: Front Left Steer Motor.
+3       TalonFX         Swerve: Front Right Drive Motor.
+4       TalonFX         Swerve: Front Right Steer Motor.
+5       TalonFX         Swerve: Rear Left Drive Motor.
+6       TalonFX         Swerve: Rear Left Steer Motor.
+7       TalonFX         Swerve: Rear Right Drive Motor.
+8       TalonFX         Swerve: Rear Right Steer Motor.
+
+9       TalonFX         Intake: Pivit.
+10      TalonFX         Intake: Roller Left.
+11      TalonFX         Intake: Roller Right.
+
+12      TalonFX         Hopper: Roller.
+
+13      TalonFX         Shooter: Upper Left Flywheel.
+14      TalonFX         Shooter: Upper Right Flywheel.
+15      TalonFX         Shooter: Lower Left Flywheel.
+16      TalonFX         Shooter: Lower Right Flywheel.
+17      TalonFX         Shooter: Hood Left.
+18      TalonFX         Shooter: Hood Right.
+19      TalonFX         Shooter: Roller Left.
+22      TalonFX         Shooter: Roller Right.
 
 
 Encoders
 Port    Type            Description
 -----------------------------------------------------------------------------------             
-1       CanCoder        FL encoder
-2       CanCoder        FR encoder
-3       CanCoder        RL encoder
-4       CanCoder        RR encoder
+1       CanCoder        Front Left Encoder
+2       CanCoder        Front Right Encoder
+3       CanCoder        Rear Left Encoder
+4       CanCoder        Rear Right Encoder
 
 
 PWM Ports

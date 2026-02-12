@@ -21,8 +21,7 @@ import edu.wpi.first.wpilibj.DriverStation;
  * <p>It is advised to statically import this class (or one of its inner classes) wherever the
  * constants are needed, to reduce verbosity.
  */
-public final class Constants
-{
+public final class Constants {
 	public static String		PROGRAM_NAME = "ORF26-01.30.26";
 
 	public static Robot			robot;
@@ -150,7 +149,7 @@ public final class Constants
     public static double ROBOT_HEADING_KI_MAX = 0;
     public static double ROBOT_HEADING_KD = 0.001;
     public static double ROBOT_HEADING_TOLERANCE_DEG = 0.5;
-    public static boolean ROBOT_HEADING_PID_TOGGLE = true;
+    public static boolean ROBOT_HEADING_PID_TOGGLE = false;
 
     // Interpolation table
     public static double[] FLYWHEEL_SPEED_TABLE = {0.57, 0.595, 0.69, 0.715, 0.73, 0.82, 0.86};
