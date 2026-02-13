@@ -30,21 +30,21 @@ public class Shooter extends SubsystemBase {
     // This motor is a Kraken x44, change CAN ID
     private final TalonFX rollerRight = new TalonFX(Constants.ROLLER_MOTOR_RIGHT_CAN_ID, new CANBus(Constants.CANIVORE_NAME));
 
-    // Requested target (degrees) — set by callers
-    private double requestedAngleDeg = 0.0;
-    // Commanded angle we are currently outputting to hardware (degrees)
-    private double commandedAngleDeg = 0.0;
-    // Current commanded angular velocity (deg/sec)
-    private double commandedAngularVelocity = 0.0;
-    // Tunable motion parameters (initialized from Constants but editable at runtime)
-    // Internals use deg/sec and deg/sec^2. For convenience we expose RPM units on the dashboard
-    // and convert to degrees internally (1 RPM = 6 deg/sec).
-    private double turretMaxVelDegPerSec = TURRET_MAX_VELOCITY_DEG_PER_SEC;
-    private double turretMaxAccelDegPerSec2 = TURRET_MAX_ACCELERATION_DEG_PER_SEC2;
-    private boolean turretAccelEnabled = TURRET_ACCELERATION_ENABLED;
-    // Flywheel runtime tunables (RPM and RPM/s units on dashboard)
-    // (flywheel is currently controlled by TestSubsystem; no dashboard-driven flywheel tunables here)
-    
+    // This value is expected to be between 0 and 1
+    private double hoodTargetAngle;
+    // The format of this value is in rotations of the pivit motor
+    private double hoodTargetAngleMotorPosition;
+
+    // This value is expected to be between 0 and 1
+    private double hoodCurrentAngle;
+    // The format of this value is in rotations of the pivit motor
+    private double hoodCurrentAngleMotorPosition;
+    // Current RPM of the flywheel
+    private double flywheelCurrentRPM;
+    // Target RPM of the flywheel
+    private double flywheelTargetRPM;
+    // Current Error of the flywheel
+    private double flywheelError;
 
     private Drivebase drivebase;
 
@@ -61,6 +61,15 @@ public class Shooter extends SubsystemBase {
         // initialize commanded angle to whatever a reasonable default is
         this.drivebase = drivebase;
 
+        this.hoodTargetAngle = 0;
+        this.hoodTargetAngleMotorPosition = 0;
+        this.hoodCurrentAngle = 0;
+        this.hoodCurrentAngleMotorPosition = 0;
+
+        this.flywheelCurrentRPM = 0;
+        this.flywheelTargetRPM = 0;
+        this.flywheelError = 0;
+
         beamBreak = new DigitalInput(3);
     }
 
@@ -73,6 +82,9 @@ public class Shooter extends SubsystemBase {
 
         //Update the beam break sensors
         SmartDashboard.putBoolean("Beam Break", beamBreak.get());
+
+        flywheelCurrentRPM = flywheelMotorBottomLeft.getRotorVelocity(true).getValueAsDouble() * 60;
+        flywheelError = flywheelTargetRPM - flywheelCurrentRPM;
     }
 
     public void updateLaunchValues(boolean interpolate){
@@ -87,6 +99,7 @@ public class Shooter extends SubsystemBase {
         } else {
             calculateLaunchValues(distToGoal);
         }
+
     }
 
     public void calculateLaunchValues(double distToGoal){
@@ -98,34 +111,37 @@ public class Shooter extends SubsystemBase {
         double horizonalVel = distToGoal / estimatedTime;
 
         // Calculate hood angle and angle to face goal
-        double hoodAngle = Math.atan(verticalVel / horizonalVel);
+        hoodTargetAngle = Math.atan(verticalVel / horizonalVel);
         //double angleToFaceGoal = Math.atan2(yDiff, xDiff); I think this is done in a different file
         
         // Calculate flywheel RPM needed
         double initialVel = Math.sqrt(Math.pow((verticalVel), 2) * Math.pow((horizonalVel), 2));
-        double targetRpm = initialVel * CONVERSION_FACTOR_MPS_TO_RPM;
+        flywheelTargetRPM = initialVel * CONVERSION_FACTOR_MPS_TO_RPM;
         
         // Set the flywheel Velocity & Hood angle
-        setFlywheelSpeed(targetRpm);
-        setHoodAngle(hoodAngle);
-    }
-
-    public void setFlywheelSpeed(double targetFlywheelSpeed) {
-        // For future integration: apply a flywheel RPM setpoint. Currently a stub.
-
-        // Whatever the harware call is here
-        //setFlywheelSpeed(targetFlywheelSpeed);
+        setFlywheelSpeed(flywheelTargetRPM);
+        setHoodAngle(hoodTargetAngle);
     }
 
     public void setHoodAngle(double targetAngle){
-        // Whatever the harware call is here
-        //setHoodAngle(targetAngle);
+        this.hoodTargetAngleMotorPosition = this.hoodAngleToMotorPosition(this.hoodTargetAngle);
+        // Convert position input to rotations for the motor
+        double power = SmartDashboard.getNumber("pivit MotorPower", Constants.INTAKE_PIVIT_MOTOR_POWER);
+        if (this.hoodCurrentAngleMotorPosition <= this.hoodTargetAngleMotorPosition - Constants.HOOD_TOLERENCE_MOTOR_ROTATIONS) {
+                setHoodPower(power);
+            } else if (this.hoodCurrentAngleMotorPosition >= this.hoodTargetAngleMotorPosition + Constants.HOOD_TOLERENCE_MOTOR_ROTATIONS) {
+                setHoodPower(-power);
+            } else {
+                setHoodPower(0);
+            }
+
+            this.hoodCurrentAngleMotorPosition = this.getHoodAngle();
+            this.hoodCurrentAngle = this.motorPositionToHoodAngle(this.hoodCurrentAngleMotorPosition);
+            SmartDashboard.putNumber("Hood current angle", this.hoodCurrentAngle);
     }
 
     public double getNeededFlywheelSpeed(double distToGoal) {
-
-        double targetVelocity = interpolateFlywheelSpeedByDistance(distToGoal);
-        return targetVelocity * FLYWHEEL_MAX_THEORETICAL_RPM; // Normalize the target velocity by the max theoretical
+        return interpolateFlywheelSpeedByDistance(distToGoal) * FLYWHEEL_MAX_THEORETICAL_RPM; // Normalize the target velocity by the max theoretical
     }
 
     public Pose2d getGoalPose() {
@@ -187,5 +203,154 @@ public class Shooter extends SubsystemBase {
 
     public static double linearInterpolate(double point1, double point2, double percentageSplit) {
         return point1 + ((point2 - point1) * percentageSplit);
+    }
+
+    
+    // Linear interpolate the hood angle between zero and one with the motor rotations of up and down on the hood
+    public double hoodAngleToMotorPosition(double hoodAngle) {
+        return ((hoodAngle - Constants.HOOD_DOWN_ANGLE_DEGREES) / Constants.HOOD_GEAR_RATIO);
+    }
+
+    public double motorPositionToHoodAngle(double motorPosition) {
+        return ((motorPosition * Constants.HOOD_GEAR_RATIO * 360) + Constants.HOOD_DOWN_ANGLE_DEGREES);
+    }
+
+
+    public void setFlywheelSpeed(double targetFlywheelSpeed) {
+        flywheelMotorBottomLeft.set(targetFlywheelSpeed);
+        flywheelMotorBottomRight.set(targetFlywheelSpeed);
+        flywheelMotorTopLeft.set(targetFlywheelSpeed);
+        flywheelMotorTopRight.set(targetFlywheelSpeed);
+    }
+
+    public double getFlywheelRPM () {
+        return flywheelCurrentRPM;
+    }
+        public double getFlywheelTatgetRPM () {
+        return flywheelTargetRPM;
+    }
+        public double getFlywheelError () {
+        return flywheelError;
+    }
+
+    public double getFlywheelCurrent() {
+        return flywheelMotorBottomLeft.getSupplyCurrent(true).getValueAsDouble() + flywheelMotorBottomRight.getSupplyCurrent(true).getValueAsDouble() + flywheelMotorTopLeft.getSupplyCurrent(true).getValueAsDouble() + flywheelMotorTopRight.getSupplyCurrent(true).getValueAsDouble();
+    }
+
+    public double getFlywheelTopLeftMotorCurrent() {
+        return flywheelMotorTopLeft.getSupplyCurrent(true).getValueAsDouble();
+    }
+
+    public double getFlywheelTopRightMotorCurrent() {
+        return flywheelMotorTopRight.getSupplyCurrent(true).getValueAsDouble();
+    }
+
+    public double getFlywheelBottomLeftMotorCurrent() {
+        return flywheelMotorBottomLeft.getSupplyCurrent(true).getValueAsDouble();
+    }
+
+    public double getFlywheelBottomRightMotorCurrent() {
+        return flywheelMotorBottomRight.getSupplyCurrent(true).getValueAsDouble();
+    }
+
+    public double getFlywheelVoltage() {
+        return flywheelMotorBottomLeft.getSupplyVoltage(true).getValueAsDouble() + flywheelMotorBottomRight.getSupplyVoltage(true).getValueAsDouble() + flywheelMotorTopLeft.getSupplyVoltage(true).getValueAsDouble() + flywheelMotorTopRight.getSupplyVoltage(true).getValueAsDouble();
+    }
+
+    public double getFlywheelTopLeftMotorVoltage() {
+        return flywheelMotorTopLeft.getSupplyVoltage(true).getValueAsDouble();
+    }
+
+    public double getFlywheelTopRightMotorVoltage() {
+        return flywheelMotorTopRight.getSupplyVoltage(true).getValueAsDouble();
+    }
+
+    public double getFlywheelBottomLeftMotorVoltage() {
+        return flywheelMotorBottomLeft.getSupplyVoltage(true).getValueAsDouble();
+    }
+
+    public double getFlywheelBottomRightMotorVoltage() {
+        return flywheelMotorBottomRight.getSupplyVoltage(true).getValueAsDouble();
+    }
+
+    public void startTransfer() {
+        rollerLeft.set(1);
+        rollerRight.set(1);
+    }
+
+    public void startTransferWithSpeed(double speed) {
+        rollerLeft.set(speed);
+        rollerRight.set(speed);
+    }
+
+    public void stopTransfer() {
+        rollerLeft.set(0);
+        rollerRight.set(0);
+    }
+
+    public double getTransferRPM() {
+        return rollerLeft.getRotorVelocity(true).getValueAsDouble() * 60;
+    }
+
+    public double getTransferCurrent() {
+        return rollerLeft.getSupplyCurrent(true).getValueAsDouble() + rollerRight.getSupplyCurrent(true).getValueAsDouble();
+    }
+
+    public double getTransferLeftMotorCurrent() {
+        return rollerLeft.getSupplyCurrent(true).getValueAsDouble();
+    }
+
+    public double getTransferRightMotorCurrent() {
+        return rollerRight.getSupplyCurrent(true).getValueAsDouble();
+    }
+
+    public double getTransferVoltage() {
+        return rollerLeft.getSupplyVoltage(true).getValueAsDouble() + rollerRight.getSupplyVoltage(true).getValueAsDouble();
+    }
+
+    public double getTransferLeftMotorVoltage() {
+        return rollerLeft.getSupplyVoltage(true).getValueAsDouble();
+    }
+
+    public double getTransferRightMotorVoltage() {
+        return rollerRight.getSupplyVoltage(true).getValueAsDouble();
+    }
+
+    public void setHoodPower(double power){
+        this.hoodRollerLeft.set(power);
+        this.hoodRollerRight.set(power);
+    }
+    
+    // The position input is between 0 and 1 with 0 being up and 1 being down
+    public void setHoodMotorPosition(double position) {
+        hoodTargetAngleMotorPosition = position;
+    }
+
+    public double getHoodAngle() {
+        return hoodCurrentAngle;
+    }
+
+    public double getHoodCurrent() {
+        return hoodRollerLeft.getSupplyCurrent(true).getValueAsDouble() + hoodRollerRight.getSupplyCurrent(true).getValueAsDouble();
+    }
+
+    public double getHoodLeftMotorCurrent() {
+        return hoodRollerLeft.getSupplyCurrent(true).getValueAsDouble();
+    }
+
+    public double getHoodRightMotorCurrent() {
+        return hoodRollerRight.getSupplyCurrent(true).getValueAsDouble();
+    }
+
+    public double getHoodVoltage() {
+        return hoodRollerLeft.getSupplyVoltage(true).getValueAsDouble() + hoodRollerRight.getSupplyVoltage(true).getValueAsDouble();
+    }
+
+    public double getHoodLeftMotorVoltage() {
+        return hoodRollerLeft.getSupplyVoltage(true).getValueAsDouble();
+    }
+
+    public double getHoodRightMotorVoltage() {
+        return hoodRollerRight.getSupplyVoltage(true).getValueAsDouble();
     }
 }
