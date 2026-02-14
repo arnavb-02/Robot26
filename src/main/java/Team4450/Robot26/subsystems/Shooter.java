@@ -351,7 +351,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public void startInfeed() {
-        rollerMotors.set(0.2);
+        rollerMotors.set(0.6);
     }
 
     public void startInfeedWithSpeed(double speed) {
