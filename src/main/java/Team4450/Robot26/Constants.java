@@ -56,25 +56,26 @@ public final class Constants {
     public static int KRAKEN_X44_MAX_THEORETICAL_RPM = 7530;
 
     // Shooter Constants
-    public static int FLYWHEEL_MOTOR_TOP_LEFT_CAN_ID = -1;
-    public static int FLYWHEEL_MOTOR_TOP_RIGHT_CAN_ID = -1;
-    public static int FLYWHEEL_MOTOR_BOTTOM_RIGHT_CAN_ID = -1;
-    public static int FLYWHEEL_MOTOR_BOTTOM_LEFT_CAN_ID = -1;
+    public static int FLYWHEEL_MOTOR_TOP_LEFT_CAN_ID = 13;
+    public static int FLYWHEEL_MOTOR_TOP_RIGHT_CAN_ID = 14;
+    public static int FLYWHEEL_MOTOR_BOTTOM_RIGHT_CAN_ID = 16;
+    public static int FLYWHEEL_MOTOR_BOTTOM_LEFT_CAN_ID = 15;
 
-    public static int HOOD_MOTOR_LEFT_CAN_ID = -1;
-    public static int HOOD_MOTOR_RIGHT_CAN_ID = -1;
+    public static int HOOD_MOTOR_LEFT_CAN_ID = 17;
+    public static int HOOD_MOTOR_RIGHT_CAN_ID = 18;
 
-    public static int ROLLER_MOTOR_LEFT_CAN_ID = -1;
-    public static int ROLLER_MOTOR_RIGHT_CAN_ID = -1;
+    public static int ROLLER_MOTOR_LEFT_CAN_ID = 19;
+    public static int ROLLER_MOTOR_RIGHT_CAN_ID = 22;
+
     public static double HOOD_TOLERENCE_MOTOR_ROTATIONS = 0.02;
     public static double HOOD_TOLERENCE_DEGREES = 5;
     public static double HOOD_GEAR_RATIO = 3/8;
     public static double HOOD_DOWN_ANGLE_DEGREES = 15;
     
     // Intake Constants
-    public static int INTAKE_MOTOR_PIVIT_CAN_ID = -1;
-    public static int INTAKE_MOTOR_LEFT_CAN_ID = -1;
-    public static int INTAKE_MOTOR_RIGHT_CAN_ID = -1;
+    public static int INTAKE_MOTOR_PIVIT_CAN_ID = 9;
+    public static int INTAKE_MOTOR_LEFT_CAN_ID = 10;
+    public static int INTAKE_MOTOR_RIGHT_CAN_ID = 11;
 
     // The intake gear ratio it 1 to 1
     public static int INTAKE_GEAR_RATIO = 1 / 1;
@@ -183,7 +184,7 @@ public final class Constants {
     public static final double FLYWHEEL_TARGET_RPM = 2650.0;
 
     // CAN ID for flywheel TalonFX
-    public static final int FLYWHEEL_MOTOR_CAN_ID = 10;
+    public static final int FLYWHEEL_MOTOR_CAN_ID = -1;
 
     // Closed-loop slot selection
     public static final int FLYWHEEL_PID_SLOT = 0;

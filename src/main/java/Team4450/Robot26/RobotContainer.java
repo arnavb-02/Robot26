@@ -57,7 +57,7 @@ public class RobotContainer {
 
     public Intake intake;
 	public Shooter shooter;
-    public TestSubsystem testSubsystem;
+    // public TestSubsystem testSubsystem;
 
     private final Hopper hopper = new Hopper();
 
@@ -118,7 +118,7 @@ public class RobotContainer {
 
         this.intake = new Intake();
 		this.shooter = new Shooter(drivebase);
-        this.testSubsystem = new TestSubsystem();
+        // this.testSubsystem = new TestSubsystem();
 		
 		// Get information about the match environment from the Field Control System.
 		getMatchInformation();
@@ -306,18 +306,17 @@ public class RobotContainer {
 		// -------- Utility controller buttons ----------
 
 		// Driver controller A/B used for flywheel start/stop (TestSubsystem currently drives the motor)
+		 // new Trigger(() -> driverController.getAButton())
+		 // 	.onTrue(new InstantCommand(testSubsystem::start));
+
+		 // new Trigger(() -> driverController.getBButton())
+		 // 	.onTrue(new InstantCommand(testSubsystem::stop));
+
 		 new Trigger(() -> driverController.getAButton())
-		 	.onTrue(new InstantCommand(testSubsystem::start));
+		 	.onTrue(new InstantCommand(shooter::startInfeed));
 
 		 new Trigger(() -> driverController.getBButton())
-		 	.onTrue(new InstantCommand(testSubsystem::stop));
-
-		 // Bind X button to move rollers forward and Y button to stop using Triggers
-        new Trigger(() -> driverController.getXButton())
-            .onTrue(new InstantCommand(() -> hopper.setTargetRpm(Constants.HOPPER_MOTOR_SPEED_RPM)));
-
-        new Trigger(() -> driverController.getYButton())
-            .onTrue(new InstantCommand(hopper::stop));
+		 	.onTrue(new InstantCommand(shooter::stopInfeed));
 	}
 
 	/**

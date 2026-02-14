@@ -3,6 +3,8 @@ package Team4450.Robot26.subsystems;
 import static Team4450.Robot26.Constants.*;
 
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import Team4450.Robot26.Constants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -11,6 +13,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+
+import Team4450.Robot26.utility.LinkedMotors;
 
 public class Shooter extends SubsystemBase {
     // This motor is a Falcon 500
@@ -21,14 +26,18 @@ public class Shooter extends SubsystemBase {
     private final TalonFX flywheelMotorBottomLeft = new TalonFX(Constants.FLYWHEEL_MOTOR_BOTTOM_LEFT_CAN_ID, new CANBus(Constants.CANIVORE_NAME));
     // This motor is Falcon 500
     private final TalonFX flywheelMotorBottomRight = new TalonFX(Constants.FLYWHEEL_MOTOR_BOTTOM_RIGHT_CAN_ID, new CANBus(Constants.CANIVORE_NAME));
-    // This motor is a Kraken x60, change CAN ID
+    private final LinkedMotors flywheelMotors = new LinkedMotors(flywheelMotorTopLeft, flywheelMotorTopRight, flywheelMotorBottomLeft, flywheelMotorBottomRight);
+    // This motor is a Kraken x60
     private final TalonFX hoodRollerLeft = new TalonFX(Constants.HOOD_MOTOR_LEFT_CAN_ID, new CANBus(Constants.CANIVORE_NAME));
-    // This motor is a Kraken x60, change CAN ID
+    // This motor is a Kraken x60
     private final TalonFX hoodRollerRight = new TalonFX(Constants.HOOD_MOTOR_RIGHT_CAN_ID, new CANBus(Constants.CANIVORE_NAME));
-    // This motor is a Kraken x44, change CAN ID
+    // This motor is a Kraken x44
     private final TalonFX rollerLeft = new TalonFX(Constants.ROLLER_MOTOR_LEFT_CAN_ID, new CANBus(Constants.CANIVORE_NAME));
-    // This motor is a Kraken x44, change CAN ID
+    // This motor is a Kraken x44
     private final TalonFX rollerRight = new TalonFX(Constants.ROLLER_MOTOR_RIGHT_CAN_ID, new CANBus(Constants.CANIVORE_NAME));
+
+    // Link the two roller motors for use when setting the power
+    private final LinkedMotors rollerMotors = new LinkedMotors(rollerLeft, rollerRight);
 
     // This value is expected to be between 0 and 1
     private double hoodTargetAngle;
@@ -57,6 +66,19 @@ public class Shooter extends SubsystemBase {
     private static final double FLYWHEEL_HEIGHT = 0.5334; // meters (21 inches)
     private static final double CONVERSION_FACTOR_MPS_TO_RPM = 10000 / 47.93;
 
+    private double targetRpm = 0.0;
+    private double currentRpm = 0.0;
+
+    private final double maxRpm = Constants.FLYWHEEL_MAX_THEORETICAL_RPM;
+
+    private boolean flywheelEnabled = false; // Button-controlled enable
+
+    // Shuffleboard cached values
+    private boolean sdInit = false;
+
+    private double sd_kP, sd_kI, sd_kD;
+    private double sd_kS, sd_kV, sd_kA;
+
     public Shooter(Drivebase drivebase) {
         // initialize commanded angle to whatever a reasonable default is
         this.drivebase = drivebase;
@@ -71,6 +93,60 @@ public class Shooter extends SubsystemBase {
         this.flywheelError = 0;
 
         beamBreak = new DigitalInput(3);
+
+        TalonFXConfiguration cfg = new TalonFXConfiguration();
+
+        // Neutral + inversion
+        cfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+
+        cfg.MotorOutput.Inverted =
+            Constants.FLYWHEEL_INVERTED
+            ? InvertedValue.Clockwise_Positive
+            : InvertedValue.CounterClockwise_Positive;
+
+        // Slot 0 PID
+        cfg.Slot0.kP = Constants.FLYWHEEL_kP;
+        cfg.Slot0.kI = Constants.FLYWHEEL_kI;
+        cfg.Slot0.kD = Constants.FLYWHEEL_kD;
+
+        // Slot 0 Feedforward (Talon internal)
+        cfg.Slot0.kS = Constants.FLYWHEEL_kS;
+        cfg.Slot0.kV = Constants.FLYWHEEL_kV;
+        cfg.Slot0.kA = Constants.FLYWHEEL_kA;
+
+        // Motion Magic acceleration limits
+        if (Constants.FLYWHEEL_USE_MOTION_MAGIC) {
+            cfg.MotionMagic.MotionMagicAcceleration =
+                Constants.FLYWHEEL_MOTION_ACCEL_RPMS / 60.0;
+            cfg.MotionMagic.MotionMagicJerk =
+                Constants.FLYWHEEL_MOTION_JERK;
+        }
+
+        flywheelMotors.applyConfiguration(cfg);
+
+        // ---------------- Shuffleboard Defaults ----------------
+
+        SmartDashboard.putNumber(
+                "Flywheel/TargetRPM",
+                Constants.FLYWHEEL_TARGET_RPM);
+
+        SmartDashboard.putNumber("Flywheel/kP", Constants.FLYWHEEL_kP);
+        SmartDashboard.putNumber("Flywheel/kI", Constants.FLYWHEEL_kI);
+        SmartDashboard.putNumber("Flywheel/kD", Constants.FLYWHEEL_kD);
+
+        SmartDashboard.putNumber("Flywheel/kS", Constants.FLYWHEEL_kS);
+        SmartDashboard.putNumber("Flywheel/kV", Constants.FLYWHEEL_kV);
+        SmartDashboard.putNumber("Flywheel/kA", Constants.FLYWHEEL_kA);
+
+        sd_kP = Constants.FLYWHEEL_kP;
+        sd_kI = Constants.FLYWHEEL_kI;
+        sd_kD = Constants.FLYWHEEL_kD;
+
+        sd_kS = Constants.FLYWHEEL_kS;
+        sd_kV = Constants.FLYWHEEL_kV;
+        sd_kA = Constants.FLYWHEEL_kA;
+
+        sdInit = true;
     }
 
     @Override
@@ -83,8 +159,9 @@ public class Shooter extends SubsystemBase {
         //Update the beam break sensors
         SmartDashboard.putBoolean("Beam Break", beamBreak.get());
 
-        flywheelCurrentRPM = flywheelMotorBottomLeft.getRotorVelocity(true).getValueAsDouble() * 60;
+        flywheelCurrentRPM = flywheelMotorTopLeft.getRotorVelocity(true).getValueAsDouble() * 60;
         flywheelError = flywheelTargetRPM - flywheelCurrentRPM;
+        SmartDashboard.putNumber("Flywheel measured RPM", flywheelCurrentRPM);
     }
 
     public void updateLaunchValues(boolean interpolate){
@@ -273,19 +350,16 @@ public class Shooter extends SubsystemBase {
         return flywheelMotorBottomRight.getSupplyVoltage(true).getValueAsDouble();
     }
 
-    public void startTransfer() {
-        rollerLeft.set(1);
-        rollerRight.set(1);
+    public void startInfeed() {
+        rollerMotors.set(0.6);
     }
 
-    public void startTransferWithSpeed(double speed) {
-        rollerLeft.set(speed);
-        rollerRight.set(speed);
+    public void startInfeedWithSpeed(double speed) {
+        rollerMotors.set(speed);
     }
 
-    public void stopTransfer() {
-        rollerLeft.set(0);
-        rollerRight.set(0);
+    public void stopInfeed() {
+        rollerMotors.set(0);
     }
 
     public double getTransferRPM() {
