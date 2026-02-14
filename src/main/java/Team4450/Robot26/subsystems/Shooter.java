@@ -131,7 +131,7 @@ public class Shooter extends SubsystemBase {
             }
         }
 
-        // ---------------- Shuffleboard Defaults ----------------
+        SmartDashboard.putNumber("Hood Target Position", 0);
 
         SmartDashboard.putNumber(
                 "Flywheel/TargetRPM",
@@ -154,6 +154,8 @@ public class Shooter extends SubsystemBase {
         sd_kA = Constants.FLYWHEEL_kA;
 
         sdInit = true;
+
+        SmartDashboard.putNumber("Hood Power", 0.05);
     }
 
     @Override
@@ -304,20 +306,6 @@ public class Shooter extends SubsystemBase {
     }
 
     public void setHoodAngle(double targetAngle){
-        this.hoodTargetAngleMotorPosition = this.hoodAngleToMotorPosition(this.hoodTargetAngle);
-        // Convert position input to rotations for the motor
-        double power = SmartDashboard.getNumber("pivit MotorPower", Constants.INTAKE_PIVIT_MOTOR_POWER);
-        if (this.hoodCurrentAngleMotorPosition <= this.hoodTargetAngleMotorPosition - Constants.HOOD_TOLERENCE_MOTOR_ROTATIONS) {
-                setHoodPower(power);
-            } else if (this.hoodCurrentAngleMotorPosition >= this.hoodTargetAngleMotorPosition + Constants.HOOD_TOLERENCE_MOTOR_ROTATIONS) {
-                setHoodPower(-power);
-            } else {
-                setHoodPower(0);
-            }
-
-            this.hoodCurrentAngleMotorPosition = this.getHoodAngle();
-            this.hoodCurrentAngle = this.motorPositionToHoodAngle(this.hoodCurrentAngleMotorPosition);
-            SmartDashboard.putNumber("Hood current angle", this.hoodCurrentAngle);
     }
 
     public double getNeededFlywheelSpeed(double distToGoal) {
@@ -433,26 +421,6 @@ public class Shooter extends SubsystemBase {
         return flywheelMotorBottomRight.getSupplyCurrent(true).getValueAsDouble();
     }
 
-    public double getFlywheelVoltage() {
-        return flywheelMotorBottomLeft.getSupplyVoltage(true).getValueAsDouble() + flywheelMotorBottomRight.getSupplyVoltage(true).getValueAsDouble() + flywheelMotorTopLeft.getSupplyVoltage(true).getValueAsDouble() + flywheelMotorTopRight.getSupplyVoltage(true).getValueAsDouble();
-    }
-
-    public double getFlywheelTopLeftMotorVoltage() {
-        return flywheelMotorTopLeft.getSupplyVoltage(true).getValueAsDouble();
-    }
-
-    public double getFlywheelTopRightMotorVoltage() {
-        return flywheelMotorTopRight.getSupplyVoltage(true).getValueAsDouble();
-    }
-
-    public double getFlywheelBottomLeftMotorVoltage() {
-        return flywheelMotorBottomLeft.getSupplyVoltage(true).getValueAsDouble();
-    }
-
-    public double getFlywheelBottomRightMotorVoltage() {
-        return flywheelMotorBottomRight.getSupplyVoltage(true).getValueAsDouble();
-    }
-
     public void startInfeed() {
         rollerMotors.set(0.6);
     }
@@ -481,32 +449,32 @@ public class Shooter extends SubsystemBase {
         return rollerRight.getSupplyCurrent(true).getValueAsDouble();
     }
 
-    public double getTransferVoltage() {
-        return rollerLeft.getSupplyVoltage(true).getValueAsDouble() + rollerRight.getSupplyVoltage(true).getValueAsDouble();
-    }
-
-    public double getTransferLeftMotorVoltage() {
-        return rollerLeft.getSupplyVoltage(true).getValueAsDouble();
-    }
-
-    public double getTransferRightMotorVoltage() {
-        return rollerRight.getSupplyVoltage(true).getValueAsDouble();
-    }
-
     public void setHoodPower(double power){
         this.hoodRollerLeft.set(power);
         this.hoodRollerRight.set(power);
+    }
+
+    public void hoodUp() {
+        double power = SmartDashboard.getNumber("Hood Power", 0.05);
+        this.hoodRollerLeft.set(power);
+        this.hoodRollerRight.set(power);
+    }
+
+    public void hoodDown() {
+        double power = SmartDashboard.getNumber("Hood Power", 0.05);
+        this.hoodRollerLeft.set(-power);
+        this.hoodRollerRight.set(-power);
+    }
+
+    public void stopHood() {
+        this.hoodRollerLeft.set(0);
+        this.hoodRollerRight.set(0);
     }
     
     // The position input is between 0 and 1 with 0 being up and 1 being down
     public void setHoodMotorPosition(double position) {
         hoodTargetAngleMotorPosition = position;
     }
-
-    public double getHoodAngle() {
-        return hoodCurrentAngle;
-    }
-
     public double getHoodCurrent() {
         return hoodRollerLeft.getSupplyCurrent(true).getValueAsDouble() + hoodRollerRight.getSupplyCurrent(true).getValueAsDouble();
     }
@@ -517,17 +485,5 @@ public class Shooter extends SubsystemBase {
 
     public double getHoodRightMotorCurrent() {
         return hoodRollerRight.getSupplyCurrent(true).getValueAsDouble();
-    }
-
-    public double getHoodVoltage() {
-        return hoodRollerLeft.getSupplyVoltage(true).getValueAsDouble() + hoodRollerRight.getSupplyVoltage(true).getValueAsDouble();
-    }
-
-    public double getHoodLeftMotorVoltage() {
-        return hoodRollerLeft.getSupplyVoltage(true).getValueAsDouble();
-    }
-
-    public double getHoodRightMotorVoltage() {
-        return hoodRollerRight.getSupplyVoltage(true).getValueAsDouble();
     }
 }

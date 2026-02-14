@@ -81,7 +81,7 @@ public class Intake extends SubsystemBase {
 
     public void startIntake() {
         if (canSpin) {
-            intakeMotors.set(0.2);
+            intakeMotors.set(0.5);
         }
     }
 

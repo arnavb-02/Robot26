@@ -313,16 +313,27 @@ public class RobotContainer {
 		 // 	.onTrue(new InstantCommand(testSubsystem::stop));
 
 		 new Trigger(() -> driverController.getAButton())
-		 	// .onTrue(new InstantCommand(shooter::startInfeed))
-		 	// .onTrue(new InstantCommand(shooter::startFlywheel));
+		 	.onTrue(new InstantCommand(shooter::startInfeed))
+		 	.onTrue(new InstantCommand(shooter::startFlywheel));
 		 	// .onTrue(new InstantCommand(intake::startIntake));
-		 	.onTrue(new InstantCommand(hopper::start));
+		 	// .onTrue(new InstantCommand(hopper::start));
 
 		 new Trigger(() -> driverController.getBButton())
-		 	// .onTrue(new InstantCommand(shooter::stopInfeed))
-		 	// .onTrue(new InstantCommand(shooter::stopFlywheel));
+		 	.onTrue(new InstantCommand(shooter::stopInfeed))
+		 	.onTrue(new InstantCommand(shooter::stopFlywheel));
 		 	// .onTrue(new InstantCommand(intake::stopIntake));
-		 	.onTrue(new InstantCommand(hopper::stop));
+		 	// .onTrue(new InstantCommand(hopper::stop));
+            
+		 new Trigger(() -> driverController.getYButton())
+		 	.onTrue(new InstantCommand(shooter::stopHood));
+
+		 new Trigger(() -> driverController.getLeftBumper())
+		 	.onTrue(new InstantCommand(shooter::hoodUp))
+            .onFalse(new InstantCommand(shooter::stopHood));
+
+		 new Trigger(() -> driverController.getRightBumper())
+		 	.onTrue(new InstantCommand(shooter::hoodDown))
+            .onFalse(new InstantCommand(shooter::stopHood));
 	}
 
 	/**
