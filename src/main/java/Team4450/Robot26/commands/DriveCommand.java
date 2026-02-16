@@ -27,6 +27,8 @@ public class DriveCommand extends Command
 
     public final PIDController     headingPID;
 
+    private double delayCounter;
+
     public DriveCommand(Drivebase      driveBase,
                         DoubleSupplier throttleSupplier,
                         DoubleSupplier strafeSupplier,
@@ -82,7 +84,8 @@ public class DriveCommand extends Command
         
         if (robot.isAutonomous()) return;
 
-        if (SmartDashboard.getBoolean("Heading PID Toggle", Constants.HUB_TRACKING)) {
+        if (Constants.HUB_TRACKING) {
+        
         // This finds where the correct hub position is
         Pose2d hubPosition;
         if (alliance == DriverStation.Alliance.Blue) {
@@ -95,15 +98,15 @@ public class DriveCommand extends Command
         double targetHeading;
         
         // Decides where to track
-        
         // If both inputs are zero and the alliance is blue then
         if (rotationXSupplier.getAsDouble() == 0 && rotationYSupplier.getAsDouble() == 0 && alliance == DriverStation.Alliance.Blue) {
+            delayCounter = 0;
             // Checks if robot is currently in the Alliance Zone then aims at the hub
-            if (drivebase.getODPose().getX() < NEUTRAL_BLUE_ZONE_BARRIER_X) {
+            if (drivebase.getPose().getX() < NEUTRAL_BLUE_ZONE_BARRIER_X) {
                 targetHeading = drivebase.getAngleToAim(hubPosition);
             } else {
                 // Checks what side the robot is on, and aims at the nearest ferrying target point predefined in Constants
-                if (drivebase.getODPose().getY() < FIELD_MIDDLE_Y) {
+                if (drivebase.getPose().getY() < FIELD_MIDDLE_Y) {
                     targetHeading = drivebase.getAngleToAim(FERRY_BLUE_OUTPOST_CORNER);
                 } else {
                     targetHeading = drivebase.getAngleToAim(FERRY_BLUE_BLANK_CORNER);
@@ -111,10 +114,10 @@ public class DriveCommand extends Command
             }
             // This does the same thing but for the red alliance
         } else if (rotationXSupplier.getAsDouble() == 0 && rotationYSupplier.getAsDouble() == 0 && alliance == DriverStation.Alliance.Red) {
-            if (drivebase.getODPose().getX() > NEUTRAL_RED_ZONE_BARRIER_X) {
+            if (drivebase.getPose().getX() > NEUTRAL_RED_ZONE_BARRIER_X) {
                 targetHeading = drivebase.getAngleToAim(hubPosition);
             } else {
-                if (drivebase.getODPose().getY() < FIELD_MIDDLE_Y) {
+                if (drivebase.getPose().getY() < FIELD_MIDDLE_Y) {
                     targetHeading = drivebase.getAngleToAim(FERRY_RED_BLANK_CORNER);
                 } else {
                     targetHeading = drivebase.getAngleToAim(FERRY_RED_OUTPOST_CORNER);
@@ -122,14 +125,14 @@ public class DriveCommand extends Command
             }
             // If there IS input, set the target heading to where the joystick si facing in relation to the driver
         } else {
-            targetHeading = -Math.toDegrees(Math.atan2(rotationYSupplier.getAsDouble(), rotationXSupplier.getAsDouble()));
+            targetHeading = -Math.toDegrees(Math.atan2(rotationYSupplier.getAsDouble(), rotationXSupplier.getAsDouble())) - 90;
         }
         
         
         SmartDashboard.putNumber("Target Heading", targetHeading);
 
         // Adjusts for static friction, an F variable would also be an option but this works well
-        double error = -targetHeading - drivebase.getYaw180();
+        double error = -targetHeading + drivebase.getPose().getRotation().getDegrees();
         if (error > ROBOT_HEADING_TOLERANCE_DEG) {
             targetHeading -= (3 * Math.signum(error));
         }
@@ -137,7 +140,7 @@ public class DriveCommand extends Command
         SmartDashboard.putNumber("Heading Error", error);
 
         // Uses a PID and the previous assigned target heading to rotate there
-        double rotation = -headingPID.calculate(drivebase.getYaw180(), -targetHeading);
+        double rotation = -headingPID.calculate(-drivebase.getPose().getRotation().getDegrees(), -targetHeading);
         double throttle = throttleSupplier.getAsDouble();
         double strafe = strafeSupplier.getAsDouble();
         
