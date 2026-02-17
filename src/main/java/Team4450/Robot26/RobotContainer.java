@@ -279,7 +279,7 @@ public class RobotContainer {
 		 	.onChange(new InstantCommand(drivebase::toggleSlowMode));
 
 		// Reset field orientation (direction).
-		new Trigger(() -> driverController.getStartButton()) // Rich
+		new Trigger(() -> driverController.getPOV() == 180) // D-pad down Cole
 			.onTrue(new InstantCommand(drivebase::resetFieldOrientation));
 
 		// Toggle field-oriented driving mode.
@@ -387,8 +387,7 @@ public class RobotContainer {
 	/**
 	 *  Get and log information about the current match from the FMS or DS.
 	 */
-	public void getMatchInformation()
-	{
+	public void getMatchInformation() {
 		alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
   	  	location = DriverStation.getLocation().orElse(0);
   	  	eventName = DriverStation.getEventName();

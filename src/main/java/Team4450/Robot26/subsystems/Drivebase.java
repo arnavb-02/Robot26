@@ -306,7 +306,7 @@ public class Drivebase extends SubsystemBase {
      * @return An angle (0-360) for the robot to aim, accounting for velocity
      */
     public double getAngleToAim(Pose2d targetPose) {
-        Pose2d currentPose = getODPose();
+        Pose2d currentPose = getPose();
     
         double deltaX = targetPose.getX() - currentPose.getX();
         double deltaY = targetPose.getY() - currentPose.getY();
@@ -340,8 +340,8 @@ public class Drivebase extends SubsystemBase {
                 double xVelocityOffset = driveField.VelocityX * airTime;
                 double yVelocityOffset = driveField.VelocityY * airTime;
         
-                deltaX += xVelocityOffset;
-                deltaY += yVelocityOffset;
+                // deltaX += xVelocityOffset;
+                // deltaY += yVelocityOffset;
 
                 double angleToAim = Math.toDegrees(Math.atan2(deltaY, deltaX));
 
@@ -361,8 +361,8 @@ public class Drivebase extends SubsystemBase {
         double xVelocityOffset = driveField.VelocityX * airTime;
         double yVelocityOffset = driveField.VelocityY * airTime;
         
-        deltaX += xVelocityOffset;
-        deltaY += yVelocityOffset;
+        // deltaX += xVelocityOffset;
+        // deltaY += yVelocityOffset;
 
         double angleToAim = Math.toDegrees(Math.atan2(deltaY, deltaX));
 
