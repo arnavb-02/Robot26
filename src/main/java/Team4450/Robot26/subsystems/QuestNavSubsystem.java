@@ -85,10 +85,10 @@ public class QuestNavSubsystem extends SubsystemBase {
             // If the x or y difference from the robots current pose to the limelight estimate pose update the current quest estimate for the position
             SmartDashboard.putBoolean("Quest Connected", true);
             if (resetTimer > 200) {
-                if (drivebase.limelightPoseEstimate.getX() > 0.2 || drivebase.limelightPoseEstimate.getY() > 0.2) {
-                    // Pose3d limelightEstimatePose = new Pose3d(drivebase.limelightPoseEstimate);
-                    // resetQuestOdometry(limelightEstimatePose);
-                    // Util.consoleLog("Updated quest odomety to pose: ", limelightEstimatePose.toString());
+                if (Math.abs(drivebase.getPose().getX() - drivebase.limelightPoseEstimate.getX()) > Constants.LIMELIGHT_QUEST_ERROR_AMOUNT_METERS || Math.abs(drivebase.getPose().getX() - drivebase.limelightPoseEstimate.getY()) > Constants.LIMELIGHT_QUEST_ERROR_AMOUNT_METERS) {
+                    Pose3d limelightEstimatePose = new Pose3d(drivebase.limelightPoseEstimate);
+                    resetQuestOdometry(limelightEstimatePose);
+                    Util.consoleLog("Updated quest odomety to pose: ", limelightEstimatePose.toString());
                     resetTimer = 0;
                 }
             } else {

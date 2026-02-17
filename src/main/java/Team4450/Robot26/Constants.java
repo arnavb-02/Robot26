@@ -109,7 +109,7 @@ public final class Constants {
     public static Pose3d ROBOT_TO_LIMELIGHT_RIGHT = new Pose3d(0.0762, 0.318, 0, new Rotation3d(0, -0.3491, -1.5708));
     public static int VISION_BUFFER_SIZE = 1;
 
-    // Akk 77
+    public static double LIMELIGHT_QUEST_ERROR_AMOUNT_METERS = 0.2;
 
     // Assume all field measurements are in meters
     // Field Limits (The Origin of the field should be the bottom left corner therefore all pose should be in +, +)

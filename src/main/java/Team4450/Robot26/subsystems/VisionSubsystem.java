@@ -107,7 +107,7 @@ public class VisionSubsystem extends SubsystemBase {
                 useLeftLimelight = false;
             }
 
-            if (left_mt2.rawFiducials.length < 1) {
+            if (left_mt2.rawFiducials.length < 2) {
                 useLeftLimelight = false;
             }
 
@@ -125,7 +125,7 @@ public class VisionSubsystem extends SubsystemBase {
                 useRightLimelight = false;
             }
 
-            if (right_mt2.rawFiducials.length < 1) {
+            if (right_mt2.rawFiducials.length < 2) {
                 useRightLimelight = false;
             }
 

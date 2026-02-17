@@ -43,6 +43,10 @@ public class Shooter extends SubsystemBase {
     // Link the two roller motors for use when setting the power
     private final LinkedMotors rollerMotors = new LinkedMotors(rollerLeft, rollerRight);
 
+    private boolean canFlywheel;
+    private boolean canHood;
+    private boolean canInfeed;
+
     // This value is expected to be between 0 and 1
     private double hoodTargetAngle;
     // The format of this value is in rotations of the pivit motor
@@ -84,8 +88,11 @@ public class Shooter extends SubsystemBase {
     private double sd_kS, sd_kV, sd_kA;
 
     public Shooter(Drivebase drivebase) {
-        // initialize commanded angle to whatever a reasonable default is
         this.drivebase = drivebase;
+
+        this.canFlywheel = flywheelMotorTopLeft.isConnected() && flywheelMotorTopRight.isConnected() && flywheelMotorBottomLeft.isConnected() && flywheelMotorBottomRight.isConnected();
+        this.canHood = hoodRollerLeft.isConnected() && hoodRollerRight.isConnected();
+        this.canInfeed = rollerLeft.isConnected() && rollerRight.isConnected();
 
         this.hoodTargetAngle = 0;
         this.hoodTargetAngleMotorPosition = 0;
@@ -133,9 +140,7 @@ public class Shooter extends SubsystemBase {
 
         SmartDashboard.putNumber("Hood Target Position", 0);
 
-        SmartDashboard.putNumber(
-                "Flywheel/TargetRPM",
-                Constants.FLYWHEEL_TARGET_RPM);
+        SmartDashboard.putNumber("Flywheel/TargetRPM", Constants.FLYWHEEL_TARGET_RPM);
 
         SmartDashboard.putNumber("Flywheel/kP", Constants.FLYWHEEL_kP);
         SmartDashboard.putNumber("Flywheel/kI", Constants.FLYWHEEL_kI);
@@ -239,11 +244,9 @@ public class Shooter extends SubsystemBase {
             sdInit = true;
         }
 
-        // -------- Control request --------
-
         double targetRPS;
 
-        if (flywheelEnabled) {
+        if (flywheelEnabled && canFlywheel) {
             targetRPS = targetRPM / 60.0;
             MotionMagicVelocityVoltage req =
                     new MotionMagicVelocityVoltage(targetRPS)
@@ -302,10 +305,6 @@ public class Shooter extends SubsystemBase {
         
         // Set the flywheel Velocity & Hood angle
         // setFlywheelSpeed(flywheelTargetRPM);
-        setHoodAngle(hoodTargetAngle);
-    }
-
-    public void setHoodAngle(double targetAngle){
     }
 
     public double getNeededFlywheelSpeed(double distToGoal) {
@@ -422,15 +421,21 @@ public class Shooter extends SubsystemBase {
     }
 
     public void startInfeed() {
-        rollerMotors.set(0.6);
+        if (canInfeed) {
+            rollerMotors.set(0.6);
+        }
     }
 
     public void startInfeedWithSpeed(double speed) {
-        rollerMotors.set(speed);
+        if (canInfeed) {
+            rollerMotors.set(speed);
+        }
     }
 
     public void stopInfeed() {
-        rollerMotors.set(0);
+        if (canInfeed) {
+            rollerMotors.set(0);
+        }
     }
 
     public double getTransferRPM() {
@@ -450,25 +455,33 @@ public class Shooter extends SubsystemBase {
     }
 
     public void setHoodPower(double power){
-        this.hoodRollerLeft.set(power);
-        this.hoodRollerRight.set(power);
+        if (canHood) {
+            this.hoodRollerLeft.set(power);
+            this.hoodRollerRight.set(power);
+        }
     }
 
     public void hoodUp() {
-        double power = SmartDashboard.getNumber("Hood Power", 0.05);
-        this.hoodRollerLeft.set(power);
-        this.hoodRollerRight.set(power);
+        if (canHood) {
+            double power = SmartDashboard.getNumber("Hood Power", 0.05);
+            this.hoodRollerLeft.set(power);
+            this.hoodRollerRight.set(power);
+        }
     }
 
     public void hoodDown() {
-        double power = SmartDashboard.getNumber("Hood Power", 0.05);
-        this.hoodRollerLeft.set(-power);
-        this.hoodRollerRight.set(-power);
+        if (canHood) {
+            double power = SmartDashboard.getNumber("Hood Power", 0.05);
+            this.hoodRollerLeft.set(-power);
+            this.hoodRollerRight.set(-power);
+        }
     }
 
     public void stopHood() {
-        this.hoodRollerLeft.set(0);
-        this.hoodRollerRight.set(0);
+        if (canHood) {
+            this.hoodRollerLeft.set(0);
+            this.hoodRollerRight.set(0);
+        }
     }
     
     // The position input is between 0 and 1 with 0 being up and 1 being down

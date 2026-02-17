@@ -349,9 +349,7 @@ public class RobotContainer {
 	 * @return The Command to run in autonomous.
 	 */
 	public Command getAutonomousCommand() {
-		// PathPlannerAuto  	ppAutoCommand;
 		Command				autoCommand;
-
 		autoCommand = autoChooser.getSelected();
 
 		if (autoCommand == null) {
@@ -362,11 +360,6 @@ public class RobotContainer {
 		autonomousCommandName = autoCommand.getName();
 
 		Util.consoleLog("auto name=%s", autonomousCommandName);
-
-		if (autoCommand instanceof PathPlannerAuto) {
-			// ppAutoCommand = (PathPlannerAuto) autoCommand;
-			// Util.consoleLog("pp starting pose=%s", PathPlannerAuto.getStaringPoseFromAutoFile(autoCommand.getName().toString()));
-		}
 
 		return autoCommand;
   	}
