@@ -142,4 +142,3 @@ Field Oriented          boolean         True when swerve drive is in field orien
 Alternate Drive         boolean         True when alternate driving mode is enabled.
 CompressorEnabled       boolean         True when/to enable compresspr.
 LowPressure             boolean         Toggles true/false when pressure is low.
-AirPressure             numeric         Actual high side air pressure.
