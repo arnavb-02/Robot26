@@ -81,13 +81,13 @@ public final class Constants {
 
     // The intake gear ratio it 1 to 1
     public static int INTAKE_GEAR_RATIO = 1 / 1;
-    // I was told that the gear box on the Kraken is a 100:1
-    public static int INTAKE_PIVIT_GEAR_RATIO = (100 / 1) * (32 / 16);
+    // I was told that the gear box on the Kraken is a 25:1
+    public static int INTAKE_PIVIT_GEAR_RATIO = (25 / 1) * (32 / 16);
 
     public static int INTAKE_MAX_THEORETICAL_RPM = KRAKEN_X44_MAX_THEORETICAL_RPM / INTAKE_GEAR_RATIO;
     public static int INTAKE_MAX_THEORETICAL_PIVIT_RPM = KRAKEN_X60_MAX_THEORETICAL_RPM / INTAKE_PIVIT_GEAR_RATIO;
 
-    public static double INTAKE_PIVIT_MOTOR_POWER = 0.25;
+    public static double INTAKE_PIVIT_MOTOR_POWER = 0.1;
     // The format of this value is in rotations of the pivit motor
     public static int INTAKE_PIVIT_MOTOR_POSITION_UP = 0;
     // This is an assumed value and not exact
@@ -95,7 +95,7 @@ public final class Constants {
     // The format of this value is in rotations of the pivit motor
     public static double INTAKE_PIVIT_MOTOR_POSITION_DOWN = (INTAKE_PIVIT_POSITION_DOWN_DEGREES / 360) * INTAKE_PIVIT_GEAR_RATIO;
     // The format of this value is in rotations of the pivit motor
-    public static double INTAKE_PIVIT_TOLERENCE_MOTOR_ROTATIONS = 5;
+    public static double INTAKE_PIVIT_TOLERENCE_MOTOR_ROTATIONS = 0.5;
     public static double INTAKE_PIVIL_TOLERENCE_DEGREES = 360 * (INTAKE_PIVIT_TOLERENCE_MOTOR_ROTATIONS / INTAKE_PIVIT_GEAR_RATIO);
 
     public static String LIMELIGHT_FRONT = "limelight-front";
@@ -220,7 +220,7 @@ public final class Constants {
     // Hopper motor constants
     public static final int HOPPER_MOTOR_CAN_ID = 12; // Example CAN ID for the Kraken X60 motor
     public static final double HOPPER_MOTOR_SPEED_RPM = 1000.0; // Default speed in RPM
-    public static final double HOPPER_MOTOR_POWER = 0.4;
+    public static final double HOPPER_MOTOR_POWER = 1;
 
     // PID constants for Intake
     public static final double INTAKE_kP = 0.1;

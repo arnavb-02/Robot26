@@ -47,6 +47,7 @@ public class Intake extends SubsystemBase {
 
         SmartDashboard.putBoolean("Intake can Pivit", canPivit);
         SmartDashboard.putBoolean("Intake can Spin", canSpin);
+        SmartDashboard.putNumber("Pivit Position", 0);
     }
 
     @Override
@@ -54,8 +55,9 @@ public class Intake extends SubsystemBase {
         this.pivitTargetPosition = SmartDashboard.getNumber("Pivit Position", 0);
         if (this.canPivit) {
             this.pivitTargetPositionMotorPosition = this.pivitPositionToMotorPosition(this.pivitTargetPosition);
+            SmartDashboard.putNumber("ppmp", this.pivitTargetPositionMotorPosition);
             // Convert position input to rotations for the motor
-            double power = SmartDashboard.getNumber("pivit MotorPower", Constants.INTAKE_PIVIT_MOTOR_POWER);
+            double power = Constants.INTAKE_PIVIT_MOTOR_POWER;
             
             if (this.pivitCurrentPositionMotorPosition <= this.pivitTargetPositionMotorPosition - Constants.INTAKE_PIVIT_TOLERENCE_MOTOR_ROTATIONS) {
                 this.intakePivitMotor.set(power);

@@ -12,6 +12,7 @@ import Team4450.Lib.Util;
 import static Team4450.Robot26.Constants.*;
 
 import Team4450.Robot26.Constants;
+import Team4450.Robot26.RobotContainer;
 import Team4450.Robot26.Constants.DriveConstants;
 import Team4450.Robot26.subsystems.SDS.CommandSwerveDrivetrain;
 import Team4450.Robot26.subsystems.SDS.Telemetry;
@@ -21,12 +22,16 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import Team4450.Robot26.utility.RobotOrientation;
+
+import edu.wpi.first.util.sendable.Sendable;
 
 /**
  * This class wraps the SDS drive base subsystem allowing us to add/modify drive base
@@ -48,6 +53,7 @@ public class Drivebase extends SubsystemBase {
     // to control what is displayed (the simulated robot).
     private final Field2d               field2d = new Field2d();
     
+    private boolean overrideQuestForRobotPose = false;
     private boolean                     fieldRelativeDriving = true, slowMode = false;
     private boolean                     neutralModeBrake = true;
     private double                      maxSpeed = kMaxSpeed * kDriveReductionPct; 
@@ -67,6 +73,9 @@ public class Drivebase extends SubsystemBase {
 
     public Drivebase() {
         Util.consoleLog();
+
+        this.overrideQuestForRobotPose = false;
+        SmartDashboard.putBoolean("overrideQuestForRobotPose", this.overrideQuestForRobotPose);
 
         // Add pigeon gyro as a Sendable. Updates the dashboard heading indicator automatically.
 		SmartDashboard.putData("Pigeon Gyro", pigeonWrapper); 
@@ -117,7 +126,7 @@ public class Drivebase extends SubsystemBase {
         sdsDrivebase.periodic();
 
         // update 3d simulation: look in AdvantageScope.java for more
-        AdvantageScope.getInstance().setRobotPose(getODPose());
+        AdvantageScope.getInstance().setRobotPose(getPose());
         AdvantageScope.getInstance().update();
         AdvantageScope.getInstance().setSwerveModules(sdsDrivebase);
 
@@ -245,10 +254,17 @@ public class Drivebase extends SubsystemBase {
 
     /**
      * Returns current pose estimate for the robot.
+     * In this function the radians to radians conversion is because the input is incorrect somewhere
      * @return Robot pose.
      */
     public Pose2d getPose() {
-        return robotPose;
+        if (RobotContainer.questNavSubsystem.hasQuest() || SmartDashboard.getBoolean("overrideQuestForRobotPose", this.overrideQuestForRobotPose)) {
+            SmartDashboard.putBoolean("Trying to send current robotPose", true);
+            return new Pose2d(robotPose.getX(), robotPose.getY(), new Rotation2d(Math.toRadians(robotPose.getRotation().getRadians())));
+        } else {
+            SmartDashboard.putBoolean("Trying to send current robotPose", false);
+            return new Pose2d(0, 0, new Rotation2d(0));
+        }
     }
 
     @Deprecated
@@ -378,7 +394,7 @@ public class Drivebase extends SubsystemBase {
      * @return A "fake" position to aim accounting for velocity
      **/
     public Pose2d getPoseToAim(Pose2d targetPose) {
-        Pose2d currentPose = getODPose();
+        Pose2d currentPose = getPose();
         Pose2d offsetTargetPose;
     
         double deltaX = targetPose.getX() - currentPose.getX();
@@ -438,7 +454,7 @@ public class Drivebase extends SubsystemBase {
 
     // Get the distance in meters between the current robot position and the target position
     public double getDistFromRobot(Pose2d targetPose) {
-        Pose2d currentPose = getODPose(); // TODO: Change this to the vision pose estimate
+        Pose2d currentPose = getPose();
     
         double deltaX = targetPose.getX() - currentPose.getX();
         double deltaY = targetPose.getY() - currentPose.getY();
@@ -462,7 +478,7 @@ public class Drivebase extends SubsystemBase {
      */
     @SuppressWarnings("rawtypes")
     private void updateModulePoses(CommandSwerveDrivetrain sdsDriveBase) {
-        Pose2d modulePoses[] = new Pose2d[4], robotPose = getODPose();
+        Pose2d modulePoses[] = new Pose2d[4], robotPose = getPose();
 
         Translation2d moduleLocations[] = sdsDriveBase.getModuleLocations(), moduleLocation;
 
