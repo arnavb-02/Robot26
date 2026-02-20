@@ -580,7 +580,8 @@ public class Shooter extends SubsystemBase {
         this.infeedTargetRPM = targetRPM;
         double currentRPM = rollerLeft.getRotorVelocity(true).getValueAsDouble() * 60.0;
         double error = targetRPM - currentRPM;
-        double output = Constants.INFEED_kP * error;
-        rollerMotors.setPower(output);
+        double adjustment = Constants.INFEED_kP * error; // Adjustment to approach target
+        double newRPM = currentRPM + adjustment; // Adjust current RPM towards target
+        rollerMotors.setPower(newRPM / Constants.FLYWHEEL_MAX_THEORETICAL_RPM); // Normalize to motor power
     }
 }
