@@ -203,9 +203,10 @@ public class Intake extends SubsystemBase {
 
     public void setIntakeRPM(double targetRPM) {
         this.intakeTargetRPM = targetRPM;
-        double currentRPM = intakeLeftMotor.getRotorVelocity().getValueAsDouble() * 60.0;
+        double currentRPM = intakeLeftMotor.getRotorVelocity(true).getValueAsDouble() * 60.0;
         double error = targetRPM - currentRPM;
-        double output = Constants.INTAKE_kP * error;
-        intakeMotors.setPower(output);
+        double adjustment = Constants.INTAKE_kP * error; // Adjustment to approach target
+        double newRPM = currentRPM + adjustment; // Adjust current RPM towards target
+        intakeMotors.setPower(newRPM / Constants.INTAKE_MAX_THEORETICAL_RPM); // Normalize to motor power
     }
 }

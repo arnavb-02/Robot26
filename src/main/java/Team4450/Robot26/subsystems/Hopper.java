@@ -6,15 +6,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import java.util.ResourceBundle.Control;
-
 import com.ctre.phoenix6.CANBus;
-import com.ctre.phoenix6.controls.TorqueCurrentFOC;
-import com.ctre.phoenix6.controls.VelocityVoltage;
 
 public class Hopper extends SubsystemBase {
     private final TalonFX hopperMotor = new TalonFX(Constants.HOPPER_MOTOR_CAN_ID, new CANBus(Constants.CANIVORE_NAME));
-    private double hopperTargetRPM;
 
     public Hopper() {
         // Configure motor neutral mode
