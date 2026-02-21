@@ -70,7 +70,7 @@ public final class Constants {
     public static int SHOOTER_UPPER_BEAM_BREAK_PORT = 3;
 
     public static int SHOOTER_FLYWHEEL_CURRENT_LIMIT = 40;
-    public static int SHOOTER_INFEED_CURRENT_LIMIT = 20;
+    public static int SHOOTER_INFEED_CURRENT_LIMIT = 40;
     public static int INTAKE_CURRENT_LIMIT = 20;
 
     public static double HOOD_TOLERENCE_MOTOR_ROTATIONS = 0.02;
@@ -165,7 +165,7 @@ public final class Constants {
     public static boolean HUB_TRACKING = false;
 
     // Interpolation table
-    public static double[] FLYWHEEL_SPEED_TABLE = {0.57, 0.595, 0.69, 0.715, 0.73, 0.82, 0.86};
+    public static double[] FLYWHEEL_SPEED_TABLE = {3420, 3570, 4140, 4290, 4380, 4920, 5160}; // Converted from percentages to RPM
     public static double[] FLYWHEEL_SPEED_DISTANCE_TABLE = {40, 56, 90, 95, 103, 127, 152};
     public static double[] FUEL_AIR_TIME_TABLE_SEC = {0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6};
 
@@ -228,11 +228,11 @@ public final class Constants {
 
     public static final int INTAKE_DEFAULT_TARGET_RPM = 3600;
     // PID constants for Intake
-    public static final double INTAKE_kP = 0.4;
+    public static final double INTAKE_kP = 0.8;
 
     public static final int INFEED_DEFAULT_TARGET_RPM = 4000;
     // PID constants for Shooter Infeed
-    public static final double INFEED_kP = 0.4;
+    public static final double INFEED_kP = 0.8;
 
     // What is the LCD
 	// LCD display line number constants showing class where the line is set.
