@@ -7,13 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "1 Meter"
+            "pathName": "true straight path"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "runIntake"
+            "name": "startIntake"
           }
         },
         {
@@ -31,7 +31,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "1 Meter"
+            "pathName": "true straight path"
           }
         }
       ]

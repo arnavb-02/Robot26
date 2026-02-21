@@ -191,7 +191,7 @@ public class RobotContainer {
 
     // Pathplanner NamedCommands
 
-    NamedCommands.registerCommand("runIntake", new StartIntake(intake));
+    NamedCommands.registerCommand("startIntake", new StartIntake(intake));
     NamedCommands.registerCommand("stopIntake", new StopIntake(intake));
 
     // Set the default drive command. This command will be scheduled automatically
