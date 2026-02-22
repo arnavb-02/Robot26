@@ -161,8 +161,8 @@ public class DriveCommand extends Command
         // Squaring input is one way to ramp JS inputs to reduce sensitivity.
         // Please do not square the headingPID
         
-        // throttle = Util.squareInput(throttle);
-        // strafe = Util.squareInput(strafe);
+        throttle = Util.squareInput(throttle);
+        strafe = Util.squareInput(strafe);
         // rotation = Util.squareInput(rotation);
         // rotation = Math.pow(rotation, 5);
         //
