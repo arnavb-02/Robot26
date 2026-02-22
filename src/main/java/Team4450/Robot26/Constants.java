@@ -69,14 +69,14 @@ public final class Constants {
 
     public static int SHOOTER_UPPER_BEAM_BREAK_PORT = 3;
 
-    public static int SHOOTER_FLYWHEEL_CURRENT_LIMIT = 40;
-    public static int SHOOTER_INFEED_CURRENT_LIMIT = 40;
+    public static int SHOOTER_FLYWHEEL_CURRENT_LIMIT = 120;
+    public static int SHOOTER_INFEED_CURRENT_LIMIT = 30;
     public static int INTAKE_CURRENT_LIMIT = 20;
-    public static int HOPPER_CURRENT_LIMIT = 20;
+    public static int HOPPER_CURRENT_LIMIT = 40;
 
     public static double HOOD_TOLERENCE_MOTOR_ROTATIONS = 0.02;
     public static double HOOD_TOLERENCE_DEGREES = 5;
-    public static double HOOD_GEAR_RATIO = 3/8;
+    public static double HOOD_GEAR_RATIO = 3/8; //Make sure to change this constant in Shooter class for the hood angle calculation
     public static double HOOD_DOWN_ANGLE_DEGREES = 15;
     
     // Intake Constants
@@ -92,7 +92,7 @@ public final class Constants {
     public static int INTAKE_MAX_THEORETICAL_RPM = KRAKEN_X44_MAX_THEORETICAL_RPM / INTAKE_GEAR_RATIO;
     public static int INTAKE_MAX_THEORETICAL_PIVIT_RPM = KRAKEN_X60_MAX_THEORETICAL_RPM / INTAKE_PIVIT_GEAR_RATIO;
 
-    public static double INTAKE_PIVIT_MOTOR_POWER = 0.1;
+    public static double INTAKE_PIVIT_MOTOR_POWER = 0.0;
     // The format of this value is in rotations of the pivit motor
     public static int INTAKE_PIVIT_MOTOR_POSITION_UP = 0;
     // This is an assumed value and not exact
@@ -166,8 +166,8 @@ public final class Constants {
     public static boolean HUB_TRACKING = false;
 
     // Interpolation table
-    public static double[] FLYWHEEL_SPEED_TABLE = {3420, 3570, 4140, 4290, 4380, 4920, 5160}; // Converted from percentages to RPM
-    public static double[] FLYWHEEL_SPEED_DISTANCE_TABLE = {40, 56, 90, 95, 103, 127, 152};
+    public static double[] FLYWHEEL_SPEED_TABLE = {4600, 3875, 3500, 3738, 4275, 4920, 5160}; // Converted from percentages to RPM
+    public static double[] FLYWHEEL_SPEED_DISTANCE_TABLE = {4.091, 3.443, 1.845, 3.264, 103, 127, 152};
     public static double[] FUEL_AIR_TIME_TABLE_SEC = {0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6};
 
     // ---------------- Turret motion profiling constants ---------------------------------
@@ -205,7 +205,7 @@ public final class Constants {
     public static final double FLYWHEEL_kV = 0.11;
     public static final double FLYWHEEL_kA = 0.05;
     // ---------------- PID (Velocity) ----------------
-    public static final double FLYWHEEL_kP = 0.45;
+    public static final double FLYWHEEL_kP = 0.55;
     public static final double FLYWHEEL_kI = 0.25;
     public static final double FLYWHEEL_kD = 0.0;
 
