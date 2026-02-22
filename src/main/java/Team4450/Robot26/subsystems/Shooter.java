@@ -6,6 +6,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import Team4450.Robot26.Constants;
+import Team4450.Robot26.RobotContainer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -32,9 +33,9 @@ public class Shooter extends SubsystemBase {
     private final TalonFX flywheelMotorBottomRight = new TalonFX(Constants.FLYWHEEL_MOTOR_BOTTOM_RIGHT_CAN_ID, new CANBus(Constants.CANIVORE_NAME));
     private final LinkedMotors flywheelMotors = new LinkedMotors(flywheelMotorTopLeft, flywheelMotorTopRight, flywheelMotorBottomLeft, flywheelMotorBottomRight);
     // This motor is a Kraken x60
-    private final TalonFX hoodRollerLeft = new TalonFX(Constants.HOOD_MOTOR_LEFT_CAN_ID, new CANBus(Constants.CANIVORE_NAME));
+    private final TalonFX hoodLeft = new TalonFX(Constants.HOOD_MOTOR_LEFT_CAN_ID, new CANBus(Constants.CANIVORE_NAME));
     // This motor is a Kraken x60
-    private final TalonFX hoodRollerRight = new TalonFX(Constants.HOOD_MOTOR_RIGHT_CAN_ID, new CANBus(Constants.CANIVORE_NAME));
+    private final TalonFX hoodRight = new TalonFX(Constants.HOOD_MOTOR_RIGHT_CAN_ID, new CANBus(Constants.CANIVORE_NAME));
     // This motor is a Kraken x44
     private final TalonFX infeedMotorLeft = new TalonFX(Constants.INFEED_MOTOR_LEFT_CAN_ID, new CANBus(Constants.CANIVORE_NAME));
     // This motor is a Kraken x44
@@ -65,7 +66,7 @@ public class Shooter extends SubsystemBase {
     // Current Error of the flywheel
     private double flywheelError;
     //Hood Rotation Offset
-    private double hoodRotationOffset = 0.1171875;
+    private double hoodRotationOffset;
 
     private Drivebase drivebase;
 
@@ -95,7 +96,7 @@ public class Shooter extends SubsystemBase {
         this.drivebase = drivebase;
 
         this.canFlywheel = flywheelMotorTopLeft.isConnected() && flywheelMotorTopRight.isConnected() && flywheelMotorBottomLeft.isConnected() && flywheelMotorBottomRight.isConnected();
-        this.canHood = hoodRollerLeft.isConnected() && hoodRollerRight.isConnected();
+        this.canHood = hoodLeft.isConnected() && hoodRight.isConnected();
         this.canInfeed = infeedMotorLeft.isConnected() && infeedMotorRight.isConnected();
 
         this.hoodTargetAngle = 0;
@@ -106,6 +107,8 @@ public class Shooter extends SubsystemBase {
         this.flywheelCurrentRPM = 0;
         this.flywheelTargetRPM = 0;
         this.flywheelError = 0;
+
+        this.hoodRotationOffset = this.hoodLeft.getPosition(true).getValueAsDouble();
 
         beamBreak = new DigitalInput(Constants.SHOOTER_UPPER_BEAM_BREAK_PORT);
 
@@ -187,7 +190,7 @@ public class Shooter extends SubsystemBase {
         //Update the beam break sensors
         SmartDashboard.putBoolean("Beam Break", beamBreak.get());
 
-        hoodCurrentAngleMotorPosition = hoodRollerLeft.getPosition().getValueAsDouble();
+        hoodCurrentAngleMotorPosition = hoodLeft.getPosition().getValueAsDouble();
         hoodCurrentAngle = getHoodMotorPosition() * HOOD_GEAR_RATIO * 360 * (Math.PI/180);
 
         double measuredRps =
@@ -302,7 +305,9 @@ public class Shooter extends SubsystemBase {
 
         SmartDashboard.putNumber("Flywheel Current Draw", getFlywheelCurrent());
         SmartDashboard.putNumber("Infeed Current Draw", getInfeedCurrent());
-    }
+
+        double neededSpeed = calculateFinalRPM(RobotContainer.drivebase.getPose(), Constants.HUB_BLUE_WELDED_POSE, getHoodAngleRadians());
+   }
 
     public void updateLaunchValues(boolean interpolate){
         // Calculate distance to goal & diffs
@@ -491,31 +496,31 @@ public class Shooter extends SubsystemBase {
 
     public void setHoodPower(double power){
         if (canHood) {
-            this.hoodRollerLeft.set(power);
-            this.hoodRollerRight.set(power);
+            this.hoodLeft.set(power);
+            this.hoodRight.set(power);
         }
     }
 
     public void hoodUp() {
         if (canHood) {
             double power = SmartDashboard.getNumber("Hood Power", 0.05);
-            this.hoodRollerLeft.set(power);
-            this.hoodRollerRight.set(power);
+            this.hoodLeft.set(power);
+            this.hoodRight.set(power);
         }
     }
 
     public void hoodDown() {
         if (canHood) {
             double power = SmartDashboard.getNumber("Hood Power", 0.05);
-            this.hoodRollerLeft.set(-power);
-            this.hoodRollerRight.set(-power);
+            this.hoodLeft.set(-power);
+            this.hoodRight.set(-power);
         }
     }
 
     public void stopHood() {
         if (canHood) {
-            this.hoodRollerLeft.set(0);
-            this.hoodRollerRight.set(0);
+            this.hoodLeft.set(0);
+            this.hoodRight.set(0);
         }
     }
     
@@ -524,24 +529,24 @@ public class Shooter extends SubsystemBase {
         hoodTargetAngleMotorPosition = position;
     }
 
-    public double getHoodAngleRadians(){
-        return (((hoodRollerLeft.getPosition().getValueAsDouble() - hoodRotationOffset)  * Math.PI * 2 * 3) / 8) + (Math.PI / 2);
+    public double getHoodAngleRadians() {
+        return (hoodLeft.getPosition(true).getValueAsDouble() - this.hoodRotationOffset);
     }
 
-    public double getHoodMotorPosition(){
-        return hoodRollerLeft.getPosition().getValueAsDouble();
+    public double getHoodMotorPosition() {
+        return hoodLeft.getPosition().getValueAsDouble();
     }
 
     public double getHoodCurrent() {
-        return hoodRollerLeft.getSupplyCurrent(true).getValueAsDouble() + hoodRollerRight.getSupplyCurrent(true).getValueAsDouble();
+        return hoodLeft.getSupplyCurrent(true).getValueAsDouble() + hoodRight.getSupplyCurrent(true).getValueAsDouble();
     }
 
     public double getHoodLeftMotorCurrent() {
-        return hoodRollerLeft.getSupplyCurrent(true).getValueAsDouble();
+        return hoodLeft.getSupplyCurrent(true).getValueAsDouble();
     }
 
     public double getHoodRightMotorCurrent() {
-        return hoodRollerRight.getSupplyCurrent(true).getValueAsDouble();
+        return hoodRight.getSupplyCurrent(true).getValueAsDouble();
     }
 
     /**
@@ -611,6 +616,8 @@ public class Shooter extends SubsystemBase {
         double deltaX = hubPose.getX() - robotPose.getX();
         double deltaY = hubPose.getY() - robotPose.getY();
         double distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+        SmartDashboard.putNumber("Robot Distance", distance);
 
         double rpmMath = calculateRPM(robotPose, hubPose, hoodAngle);
         double interpolatedRPM = interpolateRPM(distance);
