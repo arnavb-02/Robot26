@@ -75,12 +75,12 @@ public final class Constants {
     public static int INTAKE_CURRENT_LIMIT = 20;
     public static int HOPPER_CURRENT_LIMIT = 40;
 
-    public static double HOOD_TOLERENCE_MOTOR_ROTATIONS = 0.02;
-    public static double HOOD_TOLERENCE_DEGREES = 5;
-    public static double HOOD_GEAR_RATIO = 3/8; //Make sure to change this constant in Shooter class for the hood angle calculation
-    public static double HOOD_DOWN_ANGLE_DEGREES = 15;
+    // public static double HOOD_TOLERENCE_MOTOR_ROTATIONS = 0.02;
+    // public static double HOOD_TOLERENCE_DEGREES = 5;
+    // public static double HOOD_GEAR_RATIO = 3/8; //Make sure to change this constant in Shooter class for the hood angle calculation
+    // public static double HOOD_DOWN_ANGLE_DEGREES = 15;
 
-    public static double SHOOTER_HOOD_TOLERENCE_MOTOR_RAIDIANS = 0.4;
+    public static double SHOOTER_HOOD_TOLERENCE_MOTOR_RAIDIANS = 2;
     
     // Intake Constants
     public static int INTAKE_MOTOR_PIVIT_CAN_ID = 9;
