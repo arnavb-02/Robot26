@@ -80,7 +80,7 @@ public final class Constants {
     public static double HOOD_GEAR_RATIO = 3/8; //Make sure to change this constant in Shooter class for the hood angle calculation
     public static double HOOD_DOWN_ANGLE_DEGREES = 15;
 
-    public static double SHOOTER_HOOD_TOLERENCE_MOTOR_RAIDIANS = 2;
+    public static double SHOOTER_HOOD_TOLERENCE_MOTOR_RAIDIANS = 0.5;
     
     // Intake Constants
     public static int INTAKE_MOTOR_PIVIT_CAN_ID = 9;

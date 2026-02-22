@@ -163,6 +163,8 @@ public class Shooter extends SubsystemBase {
         this.hoodLeft.getConfigurator().apply(hoodCFG);
         this.hoodRight.getConfigurator().apply(hoodCFG);
 
+        this.hoodMotorPosition = 0;
+        this.hoodLeft.setPosition(this.hoodMotorPosition);
 
         SmartDashboard.putNumber("Hood Target Position", 0);
 
@@ -227,7 +229,7 @@ public class Shooter extends SubsystemBase {
         double kV = SmartDashboard.getNumber("Flywheel/kV", sd_kV);
         double kA = SmartDashboard.getNumber("Flywheel/kA", sd_kA);
 
-        setHoodPosition(SmartDashboard.getNumber("Hood Position", hoodMotorPosition));
+        setHoodPosition(SmartDashboard.getNumber("Hood Target Position", this.hoodMotorPosition));
 
         SmartDashboard.putNumber("Hood Angle", getHoodMotorAngleRadians());
         SmartDashboard.putNumber("Hood Motor Position", getHoodMotorPosition());
