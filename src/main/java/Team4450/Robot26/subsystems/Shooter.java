@@ -440,7 +440,7 @@ public class Shooter extends SubsystemBase {
     public void setHoodPosition(double pos) {
         if (getHoodMotorAngleRadians() <= pos - Constants.SHOOTER_HOOD_TOLERENCE_MOTOR_RAIDIANS) {
             hoodUp();
-        } else if (getHoodMotorAngleRadians() >= pos - Constants.SHOOTER_HOOD_TOLERENCE_MOTOR_RAIDIANS) {
+        } else if (getHoodMotorAngleRadians() >= pos + Constants.SHOOTER_HOOD_TOLERENCE_MOTOR_RAIDIANS) {
             hoodDown();
         } else {
             stopHood();
