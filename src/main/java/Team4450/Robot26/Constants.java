@@ -169,9 +169,11 @@ public final class Constants {
     public static boolean HUB_TRACKING = false;
 
     // Interpolation table
-    public static double[] FLYWHEEL_SPEED_TABLE = {4600, 3875, 3500, 3738, 4275, 4920, 5160}; // Converted from percentages to RPM
-    public static double[] FLYWHEEL_SPEED_DISTANCE_TABLE = {4.091, 3.443, 1.845, 3.264, 103, 127, 152};
+    public static double[] FLYWHEEL_SPEED_TABLE = {3500, 3500, 3500, 3750, 3850, 4400}; // Converted from percentages to RPM
+    public static double[] FLYWHEEL_SPEED_DISTANCE_TABLE = {0.46, 0.91, 1.52, 2.13, 2.74, 3.35};
     public static double[] FUEL_AIR_TIME_TABLE_SEC = {0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6};
+
+    public static double[] HOOD_ARC_TABLE = {0, 0.625, 1.48, 2.17, 2.17, 2.17};
 
     // -------------------------------------------------------------------------------------
     // Flywheel tuning defaults (used as Shuffleboard starting values)
