@@ -53,12 +53,12 @@ public class Shooter extends SubsystemBase {
     // This value is expected to be between 0 and 1
     private double hoodTargetAngle;
     // The format of this value is in rotations of the pivit motor
-    private double hoodTargetAngleMotorPosition;
+    private double hoodTargetMotorPosition;
 
     // This value is expected to be between 0 and 1
     private double hoodCurrentAngle;
     // The format of this value is in rotations of the pivit motor
-    private double hoodCurrentAngleMotorPosition;
+    private double hoodMotorPosition;
     // Current RPM of the flywheel
     private double flywheelCurrentRPM;
     // Target RPM of the flywheel
@@ -96,9 +96,9 @@ public class Shooter extends SubsystemBase {
         this.canInfeed = infeedMotorLeft.isConnected() && infeedMotorRight.isConnected();
 
         this.hoodTargetAngle = 0;
-        this.hoodTargetAngleMotorPosition = 0;
+        this.hoodTargetMotorPosition = 0;
         this.hoodCurrentAngle = 0;
-        this.hoodCurrentAngleMotorPosition = 0;
+        this.hoodMotorPosition = 0;
 
         this.flywheelCurrentRPM = 0;
         this.flywheelTargetRPM = 0;
@@ -160,6 +160,7 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("Flywheel/kS", Constants.FLYWHEEL_kS);
         SmartDashboard.putNumber("Flywheel/kV", Constants.FLYWHEEL_kV);
         SmartDashboard.putNumber("Flywheel/kA", Constants.FLYWHEEL_kA);
+        SmartDashboard.putNumber("Hood Position", hoodMotorPosition);
 
         sd_kP = Constants.FLYWHEEL_kP;
         sd_kI = Constants.FLYWHEEL_kI;
@@ -186,7 +187,7 @@ public class Shooter extends SubsystemBase {
         // Update the beam break sensors
         SmartDashboard.putBoolean("Beam Break", beamBreak.get());
 
-        hoodCurrentAngleMotorPosition = hoodLeft.getPosition().getValueAsDouble();
+        hoodMotorPosition = hoodLeft.getPosition().getValueAsDouble();
         hoodCurrentAngle = getHoodMotorPosition() * HOOD_GEAR_RATIO * 360 * (Math.PI/180);
 
         double measuredRps =
@@ -210,6 +211,8 @@ public class Shooter extends SubsystemBase {
         double kS = SmartDashboard.getNumber("Flywheel/kS", sd_kS);
         double kV = SmartDashboard.getNumber("Flywheel/kV", sd_kV);
         double kA = SmartDashboard.getNumber("Flywheel/kA", sd_kA);
+
+        setHoodPosition(SmartDashboard.getNumber("Hood Position", hoodMotorPosition));
 
         SmartDashboard.putNumber("Hood Angle", getHoodAngleRadians());
         SmartDashboard.putNumber("Hood Motor Position", getHoodMotorPosition());
@@ -415,6 +418,11 @@ public class Shooter extends SubsystemBase {
         return ((motorPosition * Constants.HOOD_GEAR_RATIO * 360) + Constants.HOOD_DOWN_ANGLE_DEGREES);
     }
 
+    public void setHoodPosition(double pos){
+        hoodLeft.setPosition(pos);
+        hoodRight.setPosition(pos);
+    }
+
     public void startFlywheel() {
         this.flywheelEnabled = true;
     }
@@ -522,7 +530,7 @@ public class Shooter extends SubsystemBase {
     
     // The position input is between 0 and 1 with 0 being up and 1 being down
     public void setHoodMotorPosition(double position) {
-        hoodTargetAngleMotorPosition = position;
+        hoodTargetMotorPosition = position;
     }
 
     public double getHoodAngleRadians() {
