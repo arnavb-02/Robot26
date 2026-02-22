@@ -223,6 +223,10 @@ public class Intake extends SubsystemBase {
         }
     }
 
+    public boolean hasDevices() {
+        return intakePivitMotor.isConnected() && intakeMotorLeft.isConnected() && intakeMotorRight.isConnected();
+    }
+
     /**
      * Sets the power for the intake motors.
      * @param power The power level to set.

@@ -305,8 +305,6 @@ public class Shooter extends SubsystemBase {
 
         SmartDashboard.putNumber("Flywheel Current Draw", getFlywheelCurrent());
         SmartDashboard.putNumber("Infeed Current Draw", getInfeedCurrent());
-
-        double neededSpeed = calculateFinalRPM(RobotContainer.drivebase.getPose(), Constants.HUB_BLUE_WELDED_POSE, getHoodAngleRadians());
    }
 
     public void updateLaunchValues(boolean interpolate){
