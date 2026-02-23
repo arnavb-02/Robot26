@@ -131,12 +131,12 @@ public class DriveCommand extends Command
         
         SmartDashboard.putNumber("Target Heading", targetHeading);
 
-        double error = -targetHeading + drivebase.getPose().getRotation().getDegrees();
+        double error = -targetHeading + Math.toDegrees(drivebase.getPose().getRotation().getDegrees());
 
         SmartDashboard.putNumber("Heading Error", error);
 
         // Uses a PID and the previous assigned target heading to rotate there
-        double rotation = -headingPID.calculate(-drivebase.getPose().getRotation().getDegrees(), -targetHeading);
+        double rotation = -headingPID.calculate(-Math.toDegrees(drivebase.getPose().getRotation().getDegrees()), -targetHeading);
         double throttle = throttleSupplier.getAsDouble();
         double strafe = strafeSupplier.getAsDouble();
 
