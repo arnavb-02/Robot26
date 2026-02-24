@@ -2,23 +2,24 @@ package Team4450.Robot26.subsystems;
 
 import static Team4450.Robot26.Constants.*;
 
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 import Team4450.Robot26.Constants;
 import Team4450.Robot26.RobotContainer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.CoastOut;
-import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 
 import Team4450.Robot26.utility.LinkedMotors;
 
@@ -41,24 +42,15 @@ public class Shooter extends SubsystemBase {
     // This motor is a Kraken x44
     private final TalonFX infeedMotorRight = new TalonFX(Constants.INFEED_MOTOR_RIGHT_CAN_ID, new CANBus(Constants.CANIVORE_NAME));
 
-    // Link the two roller motors for use when setting the power
-    private final LinkedMotors infeedMotors = new LinkedMotors(infeedMotorLeft, infeedMotorRight);
-
     private boolean canFlywheel;
     private boolean canHood;
     private boolean canInfeed;
 
     private boolean runInfeed;
 
-    // This value is expected to be between 0 and 1
-    private double hoodTargetAngle;
-    // The format of this value is in rotations of the pivit motor
-    private double hoodTargetMotorPosition;
-
-    // This value is expected to be between 0 and 1
-    private double hoodCurrentAngle;
     // The format of this value is in rotations of the pivit motor
     private double hoodMotorPosition;
+    private double hoodTargetMotorPosition;
     // Current RPM of the flywheel
     private double flywheelCurrentRPM;
     // Target RPM of the flywheel
@@ -99,9 +91,6 @@ public class Shooter extends SubsystemBase {
         this.canHood = hoodLeft.isConnected() && hoodRight.isConnected();
         this.canInfeed = infeedMotorLeft.isConnected() && infeedMotorRight.isConnected();
 
-        this.hoodTargetAngle = 0;
-        this.hoodTargetMotorPosition = 0;
-        this.hoodCurrentAngle = 0;
         this.hoodMotorPosition = 0;
 
         this.flywheelCurrentRPM = 0;
@@ -160,6 +149,20 @@ public class Shooter extends SubsystemBase {
         hoodCFG.CurrentLimits = new CurrentLimitsConfigs().withSupplyCurrentLimit(Constants.SHOOTER_HOOD_CURRENT_LIMIT);
         hoodCFG.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
+        // Slot 0 PID
+        hoodCFG.Slot0.kP = 0.00002;
+        hoodCFG.Slot0.kI = 0;
+        hoodCFG.Slot0.kD = 0;
+
+        // Slot 0 Feedforward (Talon internal)
+        hoodCFG.Slot0.kS = 0; 
+        hoodCFG.Slot0.kV = 0;
+        hoodCFG.Slot0.kA = 0;
+
+        // Motion Magic acceleration limits
+        hoodCFG.MotionMagic.MotionMagicAcceleration = 2;
+        hoodCFG.MotionMagic.MotionMagicJerk = 0;
+
         this.hoodLeft.getConfigurator().apply(hoodCFG);
         this.hoodRight.getConfigurator().apply(hoodCFG);
 
@@ -205,7 +208,11 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putBoolean("Beam Break", beamBreak.get());
 
         hoodMotorPosition = hoodLeft.getPosition().getValueAsDouble();
-        hoodCurrentAngle = getHoodMotorPosition() * HOOD_GEAR_RATIO * 360 * (Math.PI/180);
+
+        updateHoodPosition(SmartDashboard.getNumber("Hood Target Position", this.hoodMotorPosition));
+
+        SmartDashboard.putNumber("Hood Angle", getHoodMotorAngleRadians());
+        SmartDashboard.putNumber("Hood Motor Position", getHoodMotorPosition());
 
         double measuredRps =
                 flywheelMotorTopLeft.getRotorVelocity()
@@ -228,11 +235,6 @@ public class Shooter extends SubsystemBase {
         double kS = SmartDashboard.getNumber("Flywheel/kS", sd_kS);
         double kV = SmartDashboard.getNumber("Flywheel/kV", sd_kV);
         double kA = SmartDashboard.getNumber("Flywheel/kA", sd_kA);
-
-        setHoodPosition(SmartDashboard.getNumber("Hood Target Position", this.hoodMotorPosition));
-
-        SmartDashboard.putNumber("Hood Angle", getHoodMotorAngleRadians());
-        SmartDashboard.putNumber("Hood Motor Position", getHoodMotorPosition());
 
         // Apply only if changed
         if (!sdInit ||
@@ -342,30 +344,6 @@ public class Shooter extends SubsystemBase {
         }   
     }
 
-    public void calculateLaunchValues(double distToGoal){
-        double desiredHeight = distToGoal > 6 ? DESIRED_MAX_HEIGHT : distToGoal / 6;
-
-        // Calculate time of flight and velocity vectors
-        double verticalVel = Math.sqrt(2 * GRAVITY * (desiredHeight - FLYWHEEL_HEIGHT));
-        double estimatedTime = (verticalVel + Math.sqrt(verticalVel - 2 * (GRAVITY) * (GOAL_HEIGHT - FLYWHEEL_HEIGHT))) / GRAVITY;
-        double horizonalVel = distToGoal / estimatedTime;
-
-        // Calculate hood angle and angle to face goal
-        hoodTargetAngle = Math.atan(verticalVel / horizonalVel);
-        //double angleToFaceGoal = Math.atan2(yDiff, xDiff); I think this is done in a different file
-        
-        // Calculate flywheel RPM needed
-        double initialVel = Math.sqrt(Math.pow((verticalVel), 2) * Math.pow((horizonalVel), 2));
-        flywheelTargetRPM = initialVel * CONVERSION_FACTOR_MPS_TO_RPM;
-        
-        // Set the flywheel Velocity & Hood angle
-        // setFlywheelSpeed(flywheelTargetRPM);
-    }
-
-    public double getNeededFlywheelSpeed(double distToGoal) {
-        return interpolateFlywheelSpeedByDistance(distToGoal) * FLYWHEEL_MAX_THEORETICAL_RPM; // Normalize the target velocity by the max theoretical
-    }
-
     public Pose2d getGoalPose() {
         // If blue side
         if (alliance == Alliance.Blue) {
@@ -469,39 +447,12 @@ public class Shooter extends SubsystemBase {
         return ((motorPosition * Constants.HOOD_GEAR_RATIO * 360) + Constants.HOOD_DOWN_ANGLE_DEGREES);
     }
 
-    public void setHoodPosition(double pos) {
-        if (getHoodMotorAngleRadians() <= pos - Constants.SHOOTER_HOOD_TOLERENCE_MOTOR_RAIDIANS) {
-            hoodUp();
-        } else if (getHoodMotorAngleRadians() >= pos + Constants.SHOOTER_HOOD_TOLERENCE_MOTOR_RAIDIANS) {
-            hoodDown();
-        } else {
-            stopHood();
-        }
-    }
+    public void updateHoodPosition(double pos) {
+        MotionMagicVoltage req = new MotionMagicVoltage(pos);
 
-    public void hoodUp() {
-        if (canHood) {
-            double power = SmartDashboard.getNumber("Hood Power", 0.05);
-            this.hoodLeft.set(power);
-            this.hoodRight.setControl(new Follower(this.hoodLeft.getDeviceID(), MotorAlignmentValue.Opposed));
-        }
+        this.hoodLeft.setControl(req);
+        this.hoodRight.setControl(new Follower(this.hoodLeft.getDeviceID(), MotorAlignmentValue.Opposed));
     }
-
-    public void hoodDown() {
-        if (canHood) {
-            double power = SmartDashboard.getNumber("Hood Power", 0.05);
-            this.hoodLeft.set(-power);
-            this.hoodRight.setControl(new Follower(this.hoodLeft.getDeviceID(), MotorAlignmentValue.Opposed));
-        }
-    }
-
-    public void stopHood() {
-        if (canHood) {
-            this.hoodLeft.set(0);
-            this.hoodRight.setControl(new Follower(this.hoodLeft.getDeviceID(), MotorAlignmentValue.Opposed));
-        }
-    }
-    
 
     public void startFlywheel() {
         this.flywheelEnabled = true;

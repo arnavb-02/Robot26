@@ -69,7 +69,7 @@ public final class Constants {
 
     public static int SHOOTER_UPPER_BEAM_BREAK_PORT = 3;
 
-    public static int SHOOTER_FLYWHEEL_CURRENT_LIMIT = 25;
+    public static int SHOOTER_FLYWHEEL_CURRENT_LIMIT = 35;
     public static int SHOOTER_INFEED_CURRENT_LIMIT = 30;
     public static int SHOOTER_HOOD_CURRENT_LIMIT = 5;
     public static int INTAKE_CURRENT_LIMIT = 20;
@@ -200,7 +200,6 @@ public final class Constants {
 
     // ---------------- Motion Magic Velocity ----------------
     // These only affect ramp rate
-    // public static final boolean FLYWHEEL_USE_MOTION_MAGIC = true;
 
     public static final double FLYWHEEL_MOTION_ACCEL_RPMS = 3500.0; // RPM/s
     public static final double FLYWHEEL_MOTION_JERK = 0.0;
