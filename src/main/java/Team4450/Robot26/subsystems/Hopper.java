@@ -39,6 +39,10 @@ public class Hopper extends SubsystemBase {
         hopperMotor.set(power);
     }
 
+    public void startSlow() {
+        hopperMotor.set(0.2);
+    }
+
     public void stop() {
         hopperMotor.set(0);
     }

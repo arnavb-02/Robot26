@@ -384,10 +384,12 @@ public class RobotContainer {
         .onFalse(new InstantCommand(hopper::stop));
 
     new Trigger(() -> driverController.getAButton())
-        .onTrue(new InstantCommand(intake::startIntake));
+        .onTrue(new InstantCommand(intake::startIntake))
+        .onTrue(new InstantCommand(hopper::startSlow));
 
     new Trigger(() -> driverController.getBButton())
-        .onTrue(new InstantCommand(intake::stopIntake));
+        .onTrue(new InstantCommand(intake::stopIntake))
+        .onTrue(new InstantCommand(hopper::stop));
 
     /*new Trigger(() -> driverController.getYButton())
         .onTrue(new InstantCommand(hopper::start))

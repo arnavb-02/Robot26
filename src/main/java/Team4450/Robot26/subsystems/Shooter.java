@@ -79,6 +79,8 @@ public class Shooter extends SubsystemBase {
     // Shuffleboard cached values
     private boolean sdInit = false;
 
+    private boolean disableAutomaticFlywheelUpdate = false;
+
     private double sd_kP, sd_kI, sd_kD;
     private double sd_kS, sd_kV, sd_kA;
 
@@ -194,7 +196,7 @@ public class Shooter extends SubsystemBase {
 
         SmartDashboard.putNumber("Hood Power", 0.05);
         SmartDashboard.putNumber("Infeed Target RPM", Constants.INFEED_DEFAULT_TARGET_RPM);
-        SmartDashboard.putNumber("Infeed Measured RPM", getInfeedRPM());
+        SmartDashboard.putBoolean("disableAutomaticFlywheelUpdate", this.disableAutomaticFlywheelUpdate);
     }
 
     @Override
@@ -339,7 +341,9 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("Robot Distance", distToGoal);
         
         if (interpolate) {
-            SmartDashboard.putNumber("Flywheel/TargetRPM", interpolateFlywheelSpeedByDistance(distToGoal));
+            if (!SmartDashboard.getBoolean("disableAutomaticFlywheelUpdate", this.disableAutomaticFlywheelUpdate)) {
+                SmartDashboard.putNumber("Flywheel/TargetRPM", interpolateFlywheelSpeedByDistance(distToGoal));
+            }
             setHoodMotorPosition(interpolateHoodByDistance(distToGoal));
         }   
     }
