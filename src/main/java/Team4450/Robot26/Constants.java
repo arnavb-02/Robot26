@@ -195,9 +195,9 @@ public final class Constants {
     public static final double FLYWHEEL_kV = 0.11;
     public static final double FLYWHEEL_kA = 0.05;
     // ---------------- PID (Velocity) ----------------
-    public static final double FLYWHEEL_kP = 999999; // This is called Bang Bang
+    public static final double FLYWHEEL_kP = 0.2; // This is called Bang Bang
     public static final double FLYWHEEL_kI = 0;
-    public static final double FLYWHEEL_kD = 0.2;
+    public static final double FLYWHEEL_kD = 0;
 
     // ---------------- Motion Magic Velocity ----------------
     // These only affect ramp rate
