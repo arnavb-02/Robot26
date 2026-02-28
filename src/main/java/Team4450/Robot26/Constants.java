@@ -82,7 +82,17 @@ public final class Constants {
     public static double HOOD_DOWN_ANGLE_DEGREES = 15;
 
     public static double SHOOTER_HOOD_TOLERENCE_MOTOR_RAIDIANS = 0.5;
-    
+
+    // Hood PID / Feedforward / MotionMagic
+    public static final double HOOD_kP = 5;
+    public static final double HOOD_kI = 0;
+    public static final double HOOD_kD = 0;
+    public static final double HOOD_kS = 0.0;
+    public static final double HOOD_kV = 0.0;
+    public static final double HOOD_kA = 0.0;
+    public static final double HOOD_MOTION_ACCEL = 5.0;
+    public static final double HOOD_MOTION_JERK = 0.0;
+
     // Intake Constants
     public static int INTAKE_MOTOR_PIVIT_CAN_ID = 9;
     public static int INTAKE_MOTOR_LEFT_CAN_ID = 10;
@@ -223,6 +233,44 @@ public final class Constants {
     public static final int INFEED_DEFAULT_TARGET_RPM = 4000;
     // PID constants for Shooter Infeed
     public static final double INFEED_kP = 0.8;
+
+    // SmartDashboard key constants for Shooter
+    public static final class ShooterKeys {
+        // Hood
+        public static final String HOOD_POSITION        = "Hood Position";
+        public static final String HOOD_ANGLE           = "Hood Angle";
+        public static final String HOOD_MOTOR_POSITION  = "Hood Motor Position";
+        public static final String HOOD_POWER           = "Hood Power";
+
+        // Flywheel telemetry
+        public static final String FLYWHEEL_TARGET_RPM      = "Flywheel/TargetRPM";
+        public static final String FLYWHEEL_MEASURED_RPM    = "Flywheel/MeasuredRPM";
+        public static final String FLYWHEEL_MEASURED_RPM_LEGACY = "Flywheel measured RPM";
+        public static final String FLYWHEEL_PERCENT_OUT     = "Flywheel/PercentOutApprox";
+        public static final String FLYWHEEL_CURRENT_DRAW    = "Flywheel Current Draw";
+
+        // Flywheel PID / FF tuning
+        public static final String FLYWHEEL_KP = "Flywheel/kP";
+        public static final String FLYWHEEL_KI = "Flywheel/kI";
+        public static final String FLYWHEEL_KD = "Flywheel/kD";
+        public static final String FLYWHEEL_KS = "Flywheel/kS";
+        public static final String FLYWHEEL_KV = "Flywheel/kV";
+        public static final String FLYWHEEL_KA = "Flywheel/kA";
+
+        // Infeed
+        public static final String INFEED_TARGET_RPM  = "Infeed Target RPM";
+        public static final String INFEED_RPM         = "Infeed RPM";
+        public static final String INFEED_CURRENT_DRAW = "Infeed Current Draw";
+
+        // Misc
+        public static final String BEAM_BREAK                       = "Beam Break";
+        public static final String DISABLE_AUTO_FLYWHEEL_UPDATE     = "disableAutomaticFlywheelUpdate";
+        public static final String ROBOT_LAUNCH_X                   = "RobotLaunchX";
+        public static final String ROBOT_LAUNCH_Y                   = "RobotLaunchY";
+        public static final String GOAL_POSE                        = "Goal Pose";
+        public static final String DIFFS                            = "Diffs";
+        public static final String ROBOT_DISTANCE                   = "Robot Distance";
+    }
 
     // What is the LCD
 	// LCD display line number constants showing class where the line is set.
