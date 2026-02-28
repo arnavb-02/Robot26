@@ -65,8 +65,8 @@ public class RobotContainer {
 
   public final DriveCommand driveCommand;
 
-  public Intake intake;
-  public Shooter shooter;
+  public static Intake intake;
+  public static Shooter shooter;
   // public TestSubsystem testSubsystem;
 
   private final Hopper hopper = new Hopper();
