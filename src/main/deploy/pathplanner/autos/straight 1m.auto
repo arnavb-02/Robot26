@@ -7,13 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Straight"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Straight pt.2"
+            "pathName": "true straight path"
           }
         }
       ]

@@ -7,13 +7,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Straight but turn"
+            "pathName": "true straight path"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "runIntake"
+            "name": "startShooter"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 4.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stopShooter"
           }
         }
       ]
