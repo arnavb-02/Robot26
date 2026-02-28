@@ -104,18 +104,18 @@ public class Shooter extends SubsystemBase {
         this.hoodMotorPosition = 0;
         this.hoodLeft.setPosition(this.hoodMotorPosition);
 
-        SmartDashboard.putNumber(Constants.ShooterKeys.HOOD_POSITION, 0);
+        sdPut(Constants.ShooterKeys.HOOD_POSITION, 0);
 
-        SmartDashboard.putNumber(Constants.ShooterKeys.FLYWHEEL_TARGET_RPM, Constants.FLYWHEEL_TARGET_RPM);
+        sdPut(Constants.ShooterKeys.FLYWHEEL_TARGET_RPM, Constants.FLYWHEEL_TARGET_RPM);
 
-        SmartDashboard.putNumber(Constants.ShooterKeys.FLYWHEEL_KP, Constants.FLYWHEEL_kP);
-        SmartDashboard.putNumber(Constants.ShooterKeys.FLYWHEEL_KI, Constants.FLYWHEEL_kI);
-        SmartDashboard.putNumber(Constants.ShooterKeys.FLYWHEEL_KD, Constants.FLYWHEEL_kD);
+        sdPut(Constants.ShooterKeys.FLYWHEEL_KP, Constants.FLYWHEEL_kP);
+        sdPut(Constants.ShooterKeys.FLYWHEEL_KI, Constants.FLYWHEEL_kI);
+        sdPut(Constants.ShooterKeys.FLYWHEEL_KD, Constants.FLYWHEEL_kD);
 
-        SmartDashboard.putNumber(Constants.ShooterKeys.FLYWHEEL_KS, Constants.FLYWHEEL_kS);
-        SmartDashboard.putNumber(Constants.ShooterKeys.FLYWHEEL_KV, Constants.FLYWHEEL_kV);
-        SmartDashboard.putNumber(Constants.ShooterKeys.FLYWHEEL_KA, Constants.FLYWHEEL_kA);
-        SmartDashboard.putNumber(Constants.ShooterKeys.HOOD_POSITION, hoodMotorPosition);
+        sdPut(Constants.ShooterKeys.FLYWHEEL_KS, Constants.FLYWHEEL_kS);
+        sdPut(Constants.ShooterKeys.FLYWHEEL_KV, Constants.FLYWHEEL_kV);
+        sdPut(Constants.ShooterKeys.FLYWHEEL_KA, Constants.FLYWHEEL_kA);
+        sdPut(Constants.ShooterKeys.HOOD_POSITION, hoodMotorPosition);
 
         sd_kP = Constants.FLYWHEEL_kP;
         sd_kI = Constants.FLYWHEEL_kI;
@@ -127,9 +127,9 @@ public class Shooter extends SubsystemBase {
 
         sdInit = true;
 
-        SmartDashboard.putNumber(Constants.ShooterKeys.HOOD_POWER, 0.05);
-        SmartDashboard.putNumber(Constants.ShooterKeys.INFEED_TARGET_RPM, Constants.INFEED_DEFAULT_TARGET_RPM);
-        SmartDashboard.putBoolean(Constants.ShooterKeys.DISABLE_AUTO_FLYWHEEL_UPDATE, this.disableAutomaticFlywheelUpdate);
+        sdPut(Constants.ShooterKeys.HOOD_POWER, 0.05);
+        sdPut(Constants.ShooterKeys.INFEED_TARGET_RPM, Constants.INFEED_DEFAULT_TARGET_RPM);
+        sdPut(Constants.ShooterKeys.DISABLE_AUTO_FLYWHEEL_UPDATE, this.disableAutomaticFlywheelUpdate);
     }
 
     @Override
@@ -140,18 +140,18 @@ public class Shooter extends SubsystemBase {
         updateLaunchValues(true);
 
         // Update the beam break sensors
-        SmartDashboard.putBoolean(Constants.ShooterKeys.BEAM_BREAK, beamBreak.get());
+        sdPut(Constants.ShooterKeys.BEAM_BREAK, beamBreak.get());
 
         hoodMotorPosition = hoodLeft.getPosition().getValueAsDouble();
 
-        if (!SmartDashboard.getBoolean(Constants.ShooterKeys.DISABLE_AUTO_FLYWHEEL_UPDATE, this.disableAutomaticFlywheelUpdate)) {
-            updateHoodPosition(SmartDashboard.getNumber(Constants.ShooterKeys.HOOD_POSITION, 0));
+        if (!sdGetBool(Constants.ShooterKeys.DISABLE_AUTO_FLYWHEEL_UPDATE, this.disableAutomaticFlywheelUpdate)) {
+            updateHoodPosition(sdGetDouble(Constants.ShooterKeys.HOOD_POSITION, 0));
         } else {
-            updateHoodPosition(SmartDashboard.getNumber(Constants.ShooterKeys.HOOD_POSITION, this.hoodMotorPosition));
+            updateHoodPosition(sdGetDouble(Constants.ShooterKeys.HOOD_POSITION, this.hoodMotorPosition));
         }
 
-        SmartDashboard.putNumber(Constants.ShooterKeys.HOOD_ANGLE, getHoodMotorAngleRadians());
-        SmartDashboard.putNumber(Constants.ShooterKeys.HOOD_MOTOR_POSITION, getHoodMotorPosition());
+        sdPut(Constants.ShooterKeys.HOOD_ANGLE, getHoodMotorAngleRadians());
+        sdPut(Constants.ShooterKeys.HOOD_MOTOR_POSITION, getHoodMotorPosition());
 
         double measuredRps =
                 flywheelMotorTopLeft.getRotorVelocity()
@@ -159,22 +159,22 @@ public class Shooter extends SubsystemBase {
                         .getValueAsDouble();
 
         currentRPM = measuredRps * 60.0;
-        SmartDashboard.putNumber(Constants.ShooterKeys.FLYWHEEL_MEASURED_RPM_LEGACY, currentRPM);
+        sdPut(Constants.ShooterKeys.FLYWHEEL_MEASURED_RPM_LEGACY, currentRPM);
 
         // -------- Shuffleboard tuning --------
 
         // Only let the dashboard override targetRPM when automatic update is disabled
         if (disableAutomaticFlywheelUpdate) {
-            targetRPM = SmartDashboard.getNumber(Constants.ShooterKeys.FLYWHEEL_TARGET_RPM, targetRPM);
+            targetRPM = sdGetDouble(Constants.ShooterKeys.FLYWHEEL_TARGET_RPM, targetRPM);
         }
 
-        double kP = SmartDashboard.getNumber(Constants.ShooterKeys.FLYWHEEL_KP, sd_kP);
-        double kI = SmartDashboard.getNumber(Constants.ShooterKeys.FLYWHEEL_KI, sd_kI);
-        double kD = SmartDashboard.getNumber(Constants.ShooterKeys.FLYWHEEL_KD, sd_kD);
+        double kP = sdGetDouble(Constants.ShooterKeys.FLYWHEEL_KP, sd_kP);
+        double kI = sdGetDouble(Constants.ShooterKeys.FLYWHEEL_KI, sd_kI);
+        double kD = sdGetDouble(Constants.ShooterKeys.FLYWHEEL_KD, sd_kD);
 
-        double kS = SmartDashboard.getNumber(Constants.ShooterKeys.FLYWHEEL_KS, sd_kS);
-        double kV = SmartDashboard.getNumber(Constants.ShooterKeys.FLYWHEEL_KV, sd_kV);
-        double kA = SmartDashboard.getNumber(Constants.ShooterKeys.FLYWHEEL_KA, sd_kA);
+        double kS = sdGetDouble(Constants.ShooterKeys.FLYWHEEL_KS, sd_kS);
+        double kV = sdGetDouble(Constants.ShooterKeys.FLYWHEEL_KV, sd_kV);
+        double kA = sdGetDouble(Constants.ShooterKeys.FLYWHEEL_KA, sd_kA);
 
         // Apply only if changed
         if (!sdInit ||
@@ -219,18 +219,17 @@ public class Shooter extends SubsystemBase {
 
         double percent = currentRPM / maxRpm;
 
-        SmartDashboard.putNumber(Constants.ShooterKeys.FLYWHEEL_MEASURED_RPM, currentRPM);
+        sdPut(Constants.ShooterKeys.FLYWHEEL_MEASURED_RPM, currentRPM);
+        sdPut(Constants.ShooterKeys.FLYWHEEL_PERCENT_OUT, percent);
 
-        SmartDashboard.putNumber(Constants.ShooterKeys.FLYWHEEL_PERCENT_OUT, percent);
-
-        SmartDashboard.putNumber(Constants.ShooterKeys.INFEED_RPM, getInfeedRPM());
+        sdPut(Constants.ShooterKeys.INFEED_RPM, getInfeedRPM());
 
         if (this.runInfeed) {
-            setInfeedRPM(SmartDashboard.getNumber(Constants.ShooterKeys.INFEED_TARGET_RPM, Constants.INFEED_DEFAULT_TARGET_RPM));
+            setInfeedRPM(sdGetDouble(Constants.ShooterKeys.INFEED_TARGET_RPM, Constants.INFEED_DEFAULT_TARGET_RPM));
         }
 
-        SmartDashboard.putNumber(Constants.ShooterKeys.FLYWHEEL_CURRENT_DRAW, getFlywheelCurrent());
-        SmartDashboard.putNumber(Constants.ShooterKeys.INFEED_CURRENT_DRAW, getInfeedCurrent());
+        sdPut(Constants.ShooterKeys.FLYWHEEL_CURRENT_DRAW, getFlywheelCurrent());
+        sdPut(Constants.ShooterKeys.INFEED_CURRENT_DRAW, getInfeedCurrent());
    }
 
     public void updateLaunchValues(boolean interpolate){
@@ -240,18 +239,16 @@ public class Shooter extends SubsystemBase {
         double yDiff = Math.abs(getGoalPose().getY() - drivebase.getPose().getY());
         double distToGoal = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
 
-        SmartDashboard.putNumber(Constants.ShooterKeys.ROBOT_LAUNCH_X, drivebase.getPose().getX());
-        SmartDashboard.putNumber(Constants.ShooterKeys.ROBOT_LAUNCH_Y, drivebase.getPose().getY());
-        SmartDashboard.putString(Constants.ShooterKeys.GOAL_POSE, getGoalPose().toString());
-        SmartDashboard.putString(Constants.ShooterKeys.DIFFS, String.format("%.2f, %.2f", xDiff, yDiff));
-        SmartDashboard.putNumber(Constants.ShooterKeys.ROBOT_DISTANCE, distToGoal);
+        sdPut(Constants.ShooterKeys.ROBOT_LAUNCH_X, drivebase.getPose().getX());
+        sdPut(Constants.ShooterKeys.ROBOT_LAUNCH_Y, drivebase.getPose().getY());
+        sdPut(Constants.ShooterKeys.GOAL_POSE, getGoalPose().toString());
+        sdPut(Constants.ShooterKeys.DIFFS, String.format("%.2f, %.2f", xDiff, yDiff));
+        sdPut(Constants.ShooterKeys.ROBOT_DISTANCE, distToGoal);
 
         if (interpolate) {
-            if (!SmartDashboard.getBoolean(Constants.ShooterKeys.DISABLE_AUTO_FLYWHEEL_UPDATE, this.disableAutomaticFlywheelUpdate)) {
-                //Changed to ensure that the targetRPM stays on robot for
-                //fastest updates and to avoid dashboard latency especially at competition
+            if (!sdGetBool(Constants.ShooterKeys.DISABLE_AUTO_FLYWHEEL_UPDATE, this.disableAutomaticFlywheelUpdate)) {
                 this.targetRPM = interpolateFlywheelSpeedByDistance(distToGoal);
-                SmartDashboard.putNumber(Constants.ShooterKeys.FLYWHEEL_TARGET_RPM, this.targetRPM);
+                sdPut(Constants.ShooterKeys.FLYWHEEL_TARGET_RPM, this.targetRPM);
             }
             setHoodMotorPosition(interpolateHoodByDistance(distToGoal));
         }   
@@ -538,7 +535,7 @@ public class Shooter extends SubsystemBase {
         double deltaY = hubPose.getY() - robotPose.getY();
         double distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
-        SmartDashboard.putNumber(Constants.ShooterKeys.ROBOT_DISTANCE, distance);
+        sdPut(Constants.ShooterKeys.ROBOT_DISTANCE, distance);
 
         double rpmMath = calculateRPM(robotPose, hubPose, hoodAngle);
         double interpolatedRPM = interpolateRPM(distance);
@@ -555,6 +552,17 @@ public class Shooter extends SubsystemBase {
         this.infeedMotorLeft.set(0.8);
         this.infeedMotorRight.setControl(new Follower(this.infeedMotorLeft.getDeviceID(), MotorAlignmentValue.Opposed));
     }
+
+    // -------------------------------------------------------------------------
+    // SmartDashboard helpers
+    // -------------------------------------------------------------------------
+
+    private void sdPut(String key, double value)  { SmartDashboard.putNumber(key, value); }
+    private void sdPut(String key, boolean value) { SmartDashboard.putBoolean(key, value); }
+    private void sdPut(String key, String value)  { SmartDashboard.putString(key, value); }
+
+    private double  sdGetDouble(String key, double  fallback) { return SmartDashboard.getNumber(key, fallback); }
+    private boolean sdGetBool(String key, boolean fallback)   { return SmartDashboard.getBoolean(key, fallback); }
 
     // -------------------------------------------------------------------------
     // Motor config helpers
