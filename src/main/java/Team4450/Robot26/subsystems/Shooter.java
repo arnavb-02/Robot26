@@ -623,8 +623,7 @@ public class Shooter extends SubsystemBase {
         double error = targetRPM - currentRPM;
         double adjustment = Constants.INFEED_kP * error; // Adjustment to approach target
         double newRPM = targetRPM + adjustment; // Adjust current RPM towards target
-        //this.infeedMotorLeft.set(newRPM / Constants.FLYWHEEL_MAX_THEORETICAL_RPM);
-        this.infeedMotorLeft.set(0.8);
+        this.infeedMotorLeft.set(newRPM / Constants.FLYWHEEL_MAX_THEORETICAL_RPM);
         this.infeedMotorRight.setControl(new Follower(this.infeedMotorLeft.getDeviceID(), MotorAlignmentValue.Opposed));
     }
 }

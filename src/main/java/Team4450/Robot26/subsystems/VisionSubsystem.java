@@ -99,8 +99,6 @@ public class VisionSubsystem extends SubsystemBase {
         // IDK what units the getX() return
         // IDK what units the getY() return
         
-        SmartDashboard.putNumber("Front raw tags number", front_mt2.rawFiducials.length);
-        SmartDashboard.putNumber("Right raw tags number", right_mt2.rawFiducials.length);
 
         if (front_mt2 != null) {
             if (Math.abs(front_mt2.pose.getX()) > Constants.FIELD_MAX_X) {
