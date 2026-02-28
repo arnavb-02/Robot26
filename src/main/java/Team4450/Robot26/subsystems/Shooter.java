@@ -76,7 +76,7 @@ public class Shooter extends SubsystemBase {
 
     private final double maxRpm = Constants.FLYWHEEL_MAX_THEORETICAL_RPM;
 
-    private boolean flywheelEnabled = false; // Button-controlled enable
+    public boolean flywheelEnabled = false; // Button-controlled enable
 
     // Shuffleboard cached values
     private boolean sdInit = false;

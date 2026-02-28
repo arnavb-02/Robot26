@@ -9,7 +9,10 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import Team4450.Robot26.commands.DriveCommand;
 import Team4450.Robot26.commands.StartIntake;
+import Team4450.Robot26.commands.StartShoot;
 import Team4450.Robot26.commands.StopIntake;
+import Team4450.Robot26.commands.StopShoot;
+import Team4450.Robot26.commands.StopAuto;
 import Team4450.Robot26.subsystems.Candle;
 import Team4450.Robot26.subsystems.Intake;
 import Team4450.Robot26.subsystems.Drivebase;
@@ -192,6 +195,9 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("runIntake", new StartIntake(intake));
     NamedCommands.registerCommand("stopIntake", new StopIntake(intake));
+    NamedCommands.registerCommand("startShooter", new StartShoot(shooter, hopper));
+    NamedCommands.registerCommand("stopShooter", new StopShoot(shooter, hopper));
+    NamedCommands.registerCommand("end", new StopAuto(drivebase));
 
     // Set the default drive command. This command will be scheduled automatically
     // to run
@@ -375,7 +381,7 @@ public class RobotContainer {
         .onTrue(new InstantCommand(shooter::startFlywheel))
         // .onTrue(new InstantCommand(drivebase::toggleHubTracking))
         .onFalse(new InstantCommand(shooter::stopFlywheel));
-        // .onFalse(new InstantCommand(drivebase::toggleHubTracking));
+    // .onFalse(new InstantCommand(drivebase::toggleHubTracking));
 
     new Trigger(() -> driverController.getRightTrigger())
         .onTrue(new InstantCommand(shooter::startInfeed))
@@ -391,9 +397,11 @@ public class RobotContainer {
         .onTrue(new InstantCommand(intake::stopIntake))
         .onTrue(new InstantCommand(hopper::stop));
 
-    /*new Trigger(() -> driverController.getYButton())
-        .onTrue(new InstantCommand(hopper::start))
-        .onFalse(new InstantCommand(hopper::stop));*/
+    /*
+     * new Trigger(() -> driverController.getYButton())
+     * .onTrue(new InstantCommand(hopper::start))
+     * .onFalse(new InstantCommand(hopper::stop));
+     */
 
     new Trigger(() -> driverController.getXButton())
         .onTrue(new InstantCommand(drivebase::toggleHubTracking));
