@@ -98,7 +98,7 @@ public class VisionSubsystem extends SubsystemBase {
 
         // IDK what units the getX() return
         // IDK what units the getY() return
-        
+
 
         if (front_mt2 != null) {
             if (Math.abs(front_mt2.pose.getX()) > Constants.FIELD_MAX_X) {

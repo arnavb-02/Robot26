@@ -1,22 +1,23 @@
 package Team4450.Robot26.subsystems;
 
 import Team4450.Robot26.Constants;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.signals.MotorAlignmentValue;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 
 import com.ctre.phoenix6.CANBus;
 
 public class Intake extends SubsystemBase {
 
     // This motor is a Kraken x60
-    private final TalonFX intakePivitMotor = new TalonFX(Constants.INTAKE_MOTOR_PIVIT_CAN_ID, new CANBus(Constants.CANIVORE_NAME));
+    private final TalonFX pivitMotor = new TalonFX(Constants.INTAKE_MOTOR_PIVIT_CAN_ID, new CANBus(Constants.CANIVORE_NAME));
     // This motor is a Kraken x44
     private final TalonFX intakeMotorLeft = new TalonFX(Constants.INTAKE_MOTOR_LEFT_CAN_ID);
     // This motor is a Kraken x44
@@ -38,7 +39,7 @@ public class Intake extends SubsystemBase {
     private boolean runIntake;
 
     public Intake() {
-        this.canPivit = intakePivitMotor.isConnected();
+        this.canPivit = pivitMotor.isConnected();
         this.canSpin = intakeMotorLeft.isConnected() && intakeMotorRight.isConnected();
 
         // Assume the pivit starting position is 0
@@ -46,7 +47,7 @@ public class Intake extends SubsystemBase {
         this.pivitTargetPosition = 0;
 
         if (this.canPivit) {
-            this.intakePivitMotor.setPosition(0);
+            this.pivitMotor.setPosition(0);
         }
 
         TalonFXConfiguration intakeCFG = new TalonFXConfiguration();
@@ -58,6 +59,30 @@ public class Intake extends SubsystemBase {
 
         this.intakeMotorLeft.getConfigurator().apply(intakeCFG);
         this.intakeMotorRight.getConfigurator().apply(intakeCFG);
+
+        TalonFXConfiguration pivitCFG = new TalonFXConfiguration();
+
+        // Neutral + inversion
+        pivitCFG.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        pivitCFG.CurrentLimits = new CurrentLimitsConfigs().withSupplyCurrentLimit(Constants.INTAKE_PIVIT_CURRENT_LIMIT);
+        pivitCFG.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+
+        // Slot 0 PID
+        pivitCFG.Slot0.kP = 0.00002;
+        pivitCFG.Slot0.kI = 0;
+        pivitCFG.Slot0.kD = 0;
+
+        // Slot 0 Feedforward (Talon internal)
+        pivitCFG.Slot0.kS = 0; 
+        pivitCFG.Slot0.kV = 0;
+        pivitCFG.Slot0.kA = 0;
+
+        // Motion Magic acceleration limits
+        pivitCFG.MotionMagic.MotionMagicAcceleration = 2;
+        pivitCFG.MotionMagic.MotionMagicJerk = 0;
+
+        this.pivitMotor.getConfigurator().apply(pivitCFG);
+
 
         SmartDashboard.putBoolean("Intake can Pivit", canPivit);
         SmartDashboard.putBoolean("Intake can Spin", canSpin);
@@ -73,15 +98,19 @@ public class Intake extends SubsystemBase {
             this.pivitTargetPositionMotorPosition = this.pivitPositionToMotorPosition(this.pivitTargetPosition);
             SmartDashboard.putNumber("ppmp", this.pivitTargetPositionMotorPosition);
             // Convert position input to rotations for the motor
-            double power = Constants.INTAKE_PIVIT_MOTOR_POWER;
+            // double power = Constants.INTAKE_PIVIT_MOTOR_POWER;
             
-            if (this.pivitCurrentPositionMotorPosition <= this.pivitTargetPositionMotorPosition - Constants.INTAKE_PIVIT_TOLERENCE_MOTOR_ROTATIONS) {
-                this.intakePivitMotor.set(power);
-            } else if (this.pivitCurrentPositionMotorPosition >= this.pivitTargetPositionMotorPosition + Constants.INTAKE_PIVIT_TOLERENCE_MOTOR_ROTATIONS) {
-                this.intakePivitMotor.set(-power);
-            } else {
-                this.intakePivitMotor.set(0);
-            }
+            MotionMagicVoltage req = new MotionMagicVoltage(this.pivitTargetPositionMotorPosition);
+
+
+            this.pivitMotor.setControl(req);
+            // if (this.pivitCurrentPositionMotorPosition <= this.pivitTargetPositionMotorPosition - Constants.INTAKE_PIVIT_TOLERENCE_MOTOR_ROTATIONS) {
+            //     this.pivitMotor.set(power);
+            // } else if (this.pivitCurrentPositionMotorPosition >= this.pivitTargetPositionMotorPosition + Constants.INTAKE_PIVIT_TOLERENCE_MOTOR_ROTATIONS) {
+            //     this.pivitMotor.set(-power);
+            // } else {
+            //     this.pivitMotor.set(0);
+            // }
 
             this.pivitCurrentPositionMotorPosition = this.getPivitPosition();
             this.pivitCurrentPosition = this.motorPositionToPivitPosition(this.pivitCurrentPositionMotorPosition);
@@ -188,7 +217,7 @@ public class Intake extends SubsystemBase {
 
     public void setPivitMotorSpeed(double speed) {
         if (canPivit) {
-            intakePivitMotor.set(speed);
+            pivitMotor.set(speed);
         }
     }
 
@@ -201,7 +230,7 @@ public class Intake extends SubsystemBase {
     public double getPivitPosition() {
         // Need to convert
         if (canPivit) {
-            return intakePivitMotor.getPosition(true).getValueAsDouble();
+            return pivitMotor.getPosition(true).getValueAsDouble();
         } else {
             return -1;
         }
@@ -209,7 +238,7 @@ public class Intake extends SubsystemBase {
 
     public double getPivitMotorCurrent() {
         if (canPivit) {
-            return intakePivitMotor.getSupplyCurrent(true).getValueAsDouble();
+            return pivitMotor.getSupplyCurrent(true).getValueAsDouble();
         } else {
             return -1;
         }
@@ -217,10 +246,14 @@ public class Intake extends SubsystemBase {
 
     public double getPivitMotorVoltage() {
         if (canPivit) {
-            return intakePivitMotor.getSupplyVoltage(true).getValueAsDouble();
+            return pivitMotor.getSupplyVoltage(true).getValueAsDouble();
         } else {
             return -1;
         }
+    }
+
+    public boolean hasDevices() {
+        return pivitMotor.isConnected() && intakeMotorLeft.isConnected() && intakeMotorRight.isConnected();
     }
 
     /**
@@ -228,7 +261,7 @@ public class Intake extends SubsystemBase {
      * @param power The power level to set.
      */
     public void setPower(double power) {
-        this.intakePivitMotor.set(power);
+        this.pivitMotor.set(power);
     }
 
     public void setIntakeRPM(double targetRPM) {

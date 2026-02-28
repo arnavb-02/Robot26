@@ -131,18 +131,17 @@ public class DriveCommand extends Command
         
         SmartDashboard.putNumber("Target Heading", targetHeading);
 
-        // Adjusts for static friction, an F variable would also be an option but this works well
-        double error = -targetHeading + drivebase.getPose().getRotation().getDegrees();
-        if (error > ROBOT_HEADING_TOLERANCE_DEG) {
-            targetHeading -= (3 * Math.signum(error));
-        }
+        double error = -targetHeading + Math.toDegrees(drivebase.getPose().getRotation().getDegrees());
 
         SmartDashboard.putNumber("Heading Error", error);
 
         // Uses a PID and the previous assigned target heading to rotate there
-        double rotation = -headingPID.calculate(-drivebase.getPose().getRotation().getDegrees(), -targetHeading);
+        double rotation = -headingPID.calculate(-Math.toDegrees(drivebase.getPose().getRotation().getDegrees()), -targetHeading);
         double throttle = throttleSupplier.getAsDouble();
         double strafe = strafeSupplier.getAsDouble();
+
+        throttle = Util.squareInput(throttle);
+        strafe = Util.squareInput(strafe);
         
         headingPID.setP(SmartDashboard.getNumber("Heading P", Constants.ROBOT_HEADING_KP));
         headingPID.setI(SmartDashboard.getNumber("Heading I", Constants.ROBOT_HEADING_KI));
@@ -161,8 +160,8 @@ public class DriveCommand extends Command
         // Squaring input is one way to ramp JS inputs to reduce sensitivity.
         // Please do not square the headingPID
         
-        // throttle = Util.squareInput(throttle);
-        // strafe = Util.squareInput(strafe);
+        throttle = Util.squareInput(throttle);
+        strafe = Util.squareInput(strafe);
         // rotation = Util.squareInput(rotation);
         // rotation = Math.pow(rotation, 5);
         //
