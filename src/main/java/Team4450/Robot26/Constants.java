@@ -195,9 +195,9 @@ public final class Constants {
     public static final double FLYWHEEL_kV = 0.11;
     public static final double FLYWHEEL_kA = 0.05;
     // ---------------- PID (Velocity) ----------------
-    public static final double FLYWHEEL_kP = 999999; // This is called Bang Bang
+    public static final double FLYWHEEL_kP = 0.2; // This is called Bang Bang
     public static final double FLYWHEEL_kI = 0;
-    public static final double FLYWHEEL_kD = 0.2;
+    public static final double FLYWHEEL_kD = 0;
 
     // ---------------- Motion Magic Velocity ----------------
     // These only affect ramp rate
@@ -246,7 +246,7 @@ public final class Constants {
         public static double kMaxAngularRate = RotationsPerSecond.of(1.0).in(RadiansPerSecond); // 1 rotation per second max angular velocity
 
         // Velocity dead bands applied in SDS code. Times max speed.
-        public static final double  DRIVE_DEADBAND = 0.01, ROTATION_DEADBAND = 0.00001;
+        public static final double  DRIVE_DEADBAND = 0.01, ROTATION_DEADBAND = 0.1;
 
         // Factors used to reduce robot max speed to levels desired for lab/demo operation.
         // The split below matches the rotation speed to drive speed. Needs to be tuned for

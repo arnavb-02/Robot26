@@ -20,6 +20,8 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 
 import Team4450.Robot26.utility.LinkedMotors;
 
@@ -103,7 +105,7 @@ public class Shooter extends SubsystemBase {
 
         beamBreak = new DigitalInput(Constants.SHOOTER_UPPER_BEAM_BREAK_PORT);
 
-        for (int i = 0; i < flywheelMotors.getTotalMotors(); i++) {
+        // for (int i = 0; i < flywheelMotors.getTotalMotors(); i++) {
             TalonFXConfiguration cfg = new TalonFXConfiguration();
 
             // Neutral + inversion
@@ -129,10 +131,11 @@ public class Shooter extends SubsystemBase {
             cfg.MotionMagic.MotionMagicJerk =
                 Constants.FLYWHEEL_MOTION_JERK;
 
-            if (flywheelMotors.getMotorByIndex(i) != null) {
-                flywheelMotors.getMotorByIndex(i).getConfigurator().apply(cfg);
-            }
-        }
+            // if (flywheelMotors.getMotorByIndex(i) != null) {
+            //     flywheelMotors.getMotorByIndex(i).getConfigurator().apply(cfg);
+            // }
+            this.flywheelMotorTopLeft.getConfigurator().apply(cfg);
+        // }
 
         TalonFXConfiguration infeedCFG = new TalonFXConfiguration();
 
@@ -152,7 +155,7 @@ public class Shooter extends SubsystemBase {
         hoodCFG.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
         // Slot 0 PID
-        hoodCFG.Slot0.kP = 0.00002;
+        hoodCFG.Slot0.kP = 5;
         hoodCFG.Slot0.kI = 0;
         hoodCFG.Slot0.kD = 0;
 
@@ -162,7 +165,7 @@ public class Shooter extends SubsystemBase {
         hoodCFG.Slot0.kA = 0;
 
         // Motion Magic acceleration limits
-        hoodCFG.MotionMagic.MotionMagicAcceleration = 2;
+        hoodCFG.MotionMagic.MotionMagicAcceleration = 5;
         hoodCFG.MotionMagic.MotionMagicJerk = 0;
 
         this.hoodLeft.getConfigurator().apply(hoodCFG);
@@ -171,7 +174,7 @@ public class Shooter extends SubsystemBase {
         this.hoodMotorPosition = 0;
         this.hoodLeft.setPosition(this.hoodMotorPosition);
 
-        SmartDashboard.putNumber("Hood Target Position", 0);
+        SmartDashboard.putNumber("Hood Position", 0);
 
         SmartDashboard.putNumber("Flywheel/TargetRPM", Constants.FLYWHEEL_TARGET_RPM);
 
@@ -211,7 +214,11 @@ public class Shooter extends SubsystemBase {
 
         hoodMotorPosition = hoodLeft.getPosition().getValueAsDouble();
 
-        updateHoodPosition(SmartDashboard.getNumber("Hood Target Position", this.hoodMotorPosition));
+        if (!SmartDashboard.getBoolean("disableAutomaticFlywheelUpdate", this.disableAutomaticFlywheelUpdate)) {
+            updateHoodPosition(SmartDashboard.getNumber("Hood Position", 0));
+        } else {
+            updateHoodPosition(SmartDashboard.getNumber("Hood Position", this.hoodMotorPosition));
+        }
 
         SmartDashboard.putNumber("Hood Angle", getHoodMotorAngleRadians());
         SmartDashboard.putNumber("Hood Motor Position", getHoodMotorPosition());
@@ -244,7 +251,7 @@ public class Shooter extends SubsystemBase {
                 kS != sd_kS || kV != sd_kV || kA != sd_kA) {
 
 
-            for (int i = 0; i < flywheelMotors.getTotalMotors(); i++) {
+            // for (int i = 0; i < flywheelMotors.getTotalMotors(); i++) {
                 TalonFXConfiguration cfg = new TalonFXConfiguration();
 
                 cfg.CurrentLimits = new CurrentLimitsConfigs().withSupplyCurrentLimit(Constants.SHOOTER_FLYWHEEL_CURRENT_LIMIT);
@@ -252,17 +259,17 @@ public class Shooter extends SubsystemBase {
                 // Neutral + inversion
                 cfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
-                cfg.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+                cfg.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
                 // Slot 0 PID
-                cfg.Slot0.kP = Constants.FLYWHEEL_kP;
-                cfg.Slot0.kI = Constants.FLYWHEEL_kI;
-                cfg.Slot0.kD = Constants.FLYWHEEL_kD;
+                cfg.Slot0.kP = kP;
+                cfg.Slot0.kI = kI;
+                cfg.Slot0.kD = kD;
 
                 // Slot 0 Feedforward (Talon internal)
-                cfg.Slot0.kS = Constants.FLYWHEEL_kS;
-                cfg.Slot0.kV = Constants.FLYWHEEL_kV;
-                cfg.Slot0.kA = Constants.FLYWHEEL_kA;
+                cfg.Slot0.kS = kS;
+                cfg.Slot0.kV = kV;
+                cfg.Slot0.kA = kA;
 
                 // Motion Magic acceleration limits
                 cfg.MotionMagic.MotionMagicAcceleration =
@@ -270,8 +277,9 @@ public class Shooter extends SubsystemBase {
                 cfg.MotionMagic.MotionMagicJerk =
                     Constants.FLYWHEEL_MOTION_JERK;
 
-                flywheelMotors.getMotorByIndex(i).getConfigurator().apply(cfg);
-            }
+                // flywheelMotors.getMotorByIndex(i).getConfigurator().apply(cfg);
+                this.flywheelMotorTopLeft.getConfigurator().apply(cfg);
+            // }
             
             sd_kP = kP;
             sd_kI = kI;
@@ -452,7 +460,8 @@ public class Shooter extends SubsystemBase {
     }
 
     public void updateHoodPosition(double pos) {
-        MotionMagicVoltage req = new MotionMagicVoltage(pos);
+        // MotionMagicVoltage req = new MotionMagicVoltage(pos);
+        PositionVoltage req = new PositionVoltage(pos);
 
         this.hoodLeft.setControl(req);
         this.hoodRight.setControl(new Follower(this.hoodLeft.getDeviceID(), MotorAlignmentValue.Opposed));
