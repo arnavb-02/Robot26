@@ -82,7 +82,17 @@ public final class Constants {
     public static double HOOD_DOWN_ANGLE_DEGREES = 15;
 
     public static double SHOOTER_HOOD_TOLERENCE_MOTOR_RAIDIANS = 0.5;
-    
+
+    // Hood PID / Feedforward / MotionMagic
+    public static final double HOOD_kP = 5;
+    public static final double HOOD_kI = 0;
+    public static final double HOOD_kD = 0;
+    public static final double HOOD_kS = 0.0;
+    public static final double HOOD_kV = 0.0;
+    public static final double HOOD_kA = 0.0;
+    public static final double HOOD_MOTION_ACCEL = 5.0;
+    public static final double HOOD_MOTION_JERK = 0.0;
+
     // Intake Constants
     public static int INTAKE_MOTOR_PIVIT_CAN_ID = 9;
     public static int INTAKE_MOTOR_LEFT_CAN_ID = 10;
