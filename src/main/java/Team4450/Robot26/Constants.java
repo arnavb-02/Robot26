@@ -84,12 +84,12 @@ public final class Constants {
     public static double SHOOTER_HOOD_TOLERENCE_MOTOR_RAIDIANS = 0.5;
 
     // Hood PID / Feedforward / MotionMagic
-    public static final double HOOD_kP = 5;
+    public static final double HOOD_kP = 15;
     public static final double HOOD_kI = 0;
     public static final double HOOD_kD = 0;
-    public static final double HOOD_kS = 0.0;
-    public static final double HOOD_kV = 0.0;
-    public static final double HOOD_kA = 0.0;
+    public static final double HOOD_kS = 0.47;
+    public static final double HOOD_kV = 0.1;
+    public static final double HOOD_kA = 0.1;
     public static final double HOOD_MOTION_ACCEL = 5.0;
     public static final double HOOD_MOTION_JERK = 0.0;
 
@@ -180,11 +180,11 @@ public final class Constants {
     public static boolean HUB_TRACKING = false;
 
     // Interpolation table
-    public static double[] FLYWHEEL_SPEED_TABLE = {3500, 3500, 3500, 3750, 3850, 4400}; // Converted from percentages to RPM
-    public static double[] FLYWHEEL_SPEED_DISTANCE_TABLE = {0.46, 0.91, 1.52, 2.13, 2.74, 3.35};
-    public static double[] FUEL_AIR_TIME_TABLE_SEC = {0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6};
+    public static double[] FLYWHEEL_SPEED_TABLE = {3500, 3500, 3700, 3800, 4000, 4350}; // Converted from percentages to RPM
+    public static double[] FLYWHEEL_SPEED_DISTANCE_TABLE = {1.5, 2, 2.5, 3, 3.5, 4};
+    public static double[] HOOD_ARC_TABLE = {1.7, 1.7, 1.75, 1.85, 1.85, 1.9};
 
-    public static double[] HOOD_ARC_TABLE = {0, 0.625, 1.48, 2.17, 2.17, 2.17};
+    public static double[] FUEL_AIR_TIME_TABLE_SEC = {0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6};
 
     // -------------------------------------------------------------------------------------
     // Flywheel tuning defaults (used as Shuffleboard starting values)
@@ -205,7 +205,7 @@ public final class Constants {
     public static final double FLYWHEEL_kV = 0.11;
     public static final double FLYWHEEL_kA = 0.05;
     // ---------------- PID (Velocity) ----------------
-    public static final double FLYWHEEL_kP = 0.2; // This is called Bang Bang
+    public static final double FLYWHEEL_kP = 0.2;
     public static final double FLYWHEEL_kI = 0;
     public static final double FLYWHEEL_kD = 0;
 
@@ -240,6 +240,7 @@ public final class Constants {
         public static final String HOOD_POSITION        = "Hood Position";
         public static final String HOOD_ANGLE           = "Hood Angle";
         public static final String HOOD_MOTOR_POSITION  = "Hood Motor Position";
+        public static final String HOOD_TARGET_POSITION  = "Hood Target Position";
         public static final String HOOD_POWER           = "Hood Power";
 
         // Flywheel telemetry
@@ -294,7 +295,7 @@ public final class Constants {
         public static double kMaxAngularRate = RotationsPerSecond.of(1.0).in(RadiansPerSecond); // 1 rotation per second max angular velocity
 
         // Velocity dead bands applied in SDS code. Times max speed.
-        public static final double  DRIVE_DEADBAND = 0.01, ROTATION_DEADBAND = 0.1;
+        public static final double  DRIVE_DEADBAND = 0.01, ROTATION_DEADBAND = 0.001;
 
         // Factors used to reduce robot max speed to levels desired for lab/demo operation.
         // The split below matches the rotation speed to drive speed. Needs to be tuned for

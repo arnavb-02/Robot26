@@ -104,13 +104,6 @@ public class Intake extends SubsystemBase {
 
 
             this.pivitMotor.setControl(req);
-            // if (this.pivitCurrentPositionMotorPosition <= this.pivitTargetPositionMotorPosition - Constants.INTAKE_PIVIT_TOLERENCE_MOTOR_ROTATIONS) {
-            //     this.pivitMotor.set(power);
-            // } else if (this.pivitCurrentPositionMotorPosition >= this.pivitTargetPositionMotorPosition + Constants.INTAKE_PIVIT_TOLERENCE_MOTOR_ROTATIONS) {
-            //     this.pivitMotor.set(-power);
-            // } else {
-            //     this.pivitMotor.set(0);
-            // }
 
             this.pivitCurrentPositionMotorPosition = this.getPivitPosition();
             this.pivitCurrentPosition = this.motorPositionToPivitPosition(this.pivitCurrentPositionMotorPosition);

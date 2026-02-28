@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 
 import Team4450.Robot26.utility.LinkedMotors;
 
@@ -130,6 +131,8 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber(Constants.ShooterKeys.HOOD_POWER, 0.05);
         SmartDashboard.putNumber(Constants.ShooterKeys.INFEED_TARGET_RPM, Constants.INFEED_DEFAULT_TARGET_RPM);
         SmartDashboard.putBoolean(Constants.ShooterKeys.DISABLE_AUTO_FLYWHEEL_UPDATE, this.disableAutomaticFlywheelUpdate);
+
+        SmartDashboard.putNumber("Hood Voltage Test", 0);
     }
 
     @Override
@@ -144,12 +147,8 @@ public class Shooter extends SubsystemBase {
 
         hoodMotorPosition = hoodLeft.getPosition().getValueAsDouble();
 
-        if (!SmartDashboard.getBoolean(Constants.ShooterKeys.DISABLE_AUTO_FLYWHEEL_UPDATE, this.disableAutomaticFlywheelUpdate)) {
-            updateHoodPosition(SmartDashboard.getNumber(Constants.ShooterKeys.HOOD_POSITION, 0));
-        } else {
-            updateHoodPosition(SmartDashboard.getNumber(Constants.ShooterKeys.HOOD_POSITION, this.hoodMotorPosition));
-        }
-
+        updateHoodPosition(SmartDashboard.getNumber(Constants.ShooterKeys.HOOD_TARGET_POSITION, 0));
+        
         SmartDashboard.putNumber(Constants.ShooterKeys.HOOD_ANGLE, getHoodMotorAngleRadians());
         SmartDashboard.putNumber(Constants.ShooterKeys.HOOD_MOTOR_POSITION, getHoodMotorPosition());
 
@@ -162,11 +161,6 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber(Constants.ShooterKeys.FLYWHEEL_MEASURED_RPM_LEGACY, currentRPM);
 
         // -------- Shuffleboard tuning --------
-
-        // Only let the dashboard override targetRPM when automatic update is disabled
-        if (disableAutomaticFlywheelUpdate) {
-            targetRPM = SmartDashboard.getNumber(Constants.ShooterKeys.FLYWHEEL_TARGET_RPM, targetRPM);
-        }
 
         double kP = SmartDashboard.getNumber(Constants.ShooterKeys.FLYWHEEL_KP, sd_kP);
         double kI = SmartDashboard.getNumber(Constants.ShooterKeys.FLYWHEEL_KI, sd_kI);
@@ -249,8 +243,10 @@ public class Shooter extends SubsystemBase {
             if (!SmartDashboard.getBoolean(Constants.ShooterKeys.DISABLE_AUTO_FLYWHEEL_UPDATE, this.disableAutomaticFlywheelUpdate)) {
                 this.targetRPM = interpolateFlywheelSpeedByDistance(distToGoal);
                 SmartDashboard.putNumber(Constants.ShooterKeys.FLYWHEEL_TARGET_RPM, this.targetRPM);
+                SmartDashboard.putNumber(Constants.ShooterKeys.HOOD_TARGET_POSITION, interpolateHoodByDistance(distToGoal));
+            } else {
+                this.targetRPM = SmartDashboard.getNumber(Constants.ShooterKeys.FLYWHEEL_TARGET_RPM, targetRPM);
             }
-            setHoodMotorPosition(interpolateHoodByDistance(distToGoal));
         }   
     }
 
@@ -348,17 +344,7 @@ public class Shooter extends SubsystemBase {
     }
 
     
-    // Linear interpolate the hood angle between zero and one with the motor rotations of up and down on the hood
-    public double hoodAngleToMotorPosition(double hoodAngle) {
-        return ((hoodAngle - Constants.HOOD_DOWN_ANGLE_DEGREES) / Constants.HOOD_GEAR_RATIO);
-    }
-
-    public double motorPositionToHoodAngle(double motorPosition) {
-        return ((motorPosition * Constants.HOOD_GEAR_RATIO * 360) + Constants.HOOD_DOWN_ANGLE_DEGREES);
-    }
-
     public void updateHoodPosition(double pos) {
-        // MotionMagicVoltage req = new MotionMagicVoltage(pos);
         PositionVoltage req = new PositionVoltage(pos);
 
         this.hoodLeft.setControl(req);
