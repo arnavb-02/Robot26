@@ -13,6 +13,7 @@ import Team4450.Robot26.commands.StartIntake;
 import Team4450.Robot26.commands.StartShoot;
 import Team4450.Robot26.commands.StopIntake;
 import Team4450.Robot26.commands.StopShoot;
+import Team4450.Robot26.commands.StopShooting;
 import Team4450.Robot26.commands.StopAuto;
 import Team4450.Robot26.subsystems.Candle;
 import Team4450.Robot26.subsystems.Intake;
@@ -199,6 +200,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("startShooter", new StartShoot(shooter, hopper));
     NamedCommands.registerCommand("stopShooter", new StopShoot(shooter, hopper));
     NamedCommands.registerCommand("end", new StopAuto(drivebase));
+    NamedCommands.registerCommand("Shoot", new Shoot(shooter, hopper));
+    NamedCommands.registerCommand("StopShooting", new StopShooting(shooter, hopper));
 
     // Set the default drive command. This command will be scheduled automatically
     // to run

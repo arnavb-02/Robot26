@@ -21,6 +21,18 @@
           "data": {
             "pathName": "Under trench to shot 1"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Under tench 2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot(temporary)"
+          }
         }
       ]
     }
