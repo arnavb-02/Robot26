@@ -115,10 +115,10 @@ public class Intake extends SubsystemBase {
     }
 
     public void togglePivit() {
-        if (this.pivitCurrentPosition > 0.8) {
-            this.pivitTargetPosition = 0;
+        if (this.pivitCurrentPosition >= 0.8) {
+            SmartDashboard.putNumber("Pivit Position", 0.05);
         } else {
-            this.pivitTargetPosition = 1.1;
+            SmartDashboard.putNumber("Pivit Position", 0.95);
         }
     }
 

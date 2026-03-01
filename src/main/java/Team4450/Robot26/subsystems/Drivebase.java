@@ -356,59 +356,6 @@ public class Drivebase extends SubsystemBase {
         double deltaX = targetPose.getX() - currentPose.getX();
         double deltaY = targetPose.getY() - currentPose.getY();
 
-        double distance = Math.hypot(deltaX, deltaY);
-
-        double airTime;
-
-        int lowerPointIndex = 0;
-        double lowerPoint = FLYWHEEL_SPEED_DISTANCE_TABLE[lowerPointIndex];
-
-        int higherPointIndex = FLYWHEEL_SPEED_DISTANCE_TABLE.length - 1;
-        double higherPoint = FLYWHEEL_SPEED_DISTANCE_TABLE[higherPointIndex];
-
-        double currentDistance;
-        for (int i = FLYWHEEL_SPEED_DISTANCE_TABLE.length - 2; i > 0; i--) {
-            currentDistance = FLYWHEEL_SPEED_DISTANCE_TABLE[i];
-            if (currentDistance > distance) {
-                if (currentDistance < higherPoint) {
-                    higherPoint = currentDistance;
-                    higherPointIndex = i;
-                }
-            } else if (currentDistance < distance) {
-                if (currentDistance >= lowerPoint) {
-                    lowerPoint = currentDistance;
-                    lowerPointIndex = i;
-                }
-            } else {
-                airTime = FUEL_AIR_TIME_TABLE_SEC[i];
-
-                double xVelocityOffset = driveField.VelocityX * airTime;
-                double yVelocityOffset = driveField.VelocityY * airTime;
-
-                // deltaX += xVelocityOffset;
-                // deltaY += yVelocityOffset;
-
-                double angleToAim = Math.toDegrees(Math.atan2(deltaY, deltaX));
-
-                return angleToAim;
-            }
-        }
-
-        double lowerTime = FUEL_AIR_TIME_TABLE_SEC[lowerPointIndex];
-        double higherTime = FUEL_AIR_TIME_TABLE_SEC[higherPointIndex];
-
-        if (higherPoint == lowerPoint) {
-            airTime = lowerTime;
-        } else {
-            airTime = lowerTime + ((higherTime - lowerTime) * (distance - lowerPoint) / (higherPoint - lowerPoint));
-        }
-
-        double xVelocityOffset = driveField.VelocityX * airTime;
-        double yVelocityOffset = driveField.VelocityY * airTime;
-
-        deltaX += xVelocityOffset;
-        deltaY += yVelocityOffset;
-
         double angleToAim = Math.toDegrees(Math.atan2(deltaY, deltaX));
 
         return angleToAim;
