@@ -370,12 +370,8 @@ public class RobotContainer {
 
     // -------- Utility controller buttons ----------
     //
-    // This does not work
-    // new Trigger(() -> driverController.getRightBumperButton())
-    //     .onTrue(new InstantCommand(shooter::disableAutomaticFlywheelUpdate))
-    //     .onTrue(new InstantCommand(shooter::nameThisBetter))
-    //     .whileTrue(new Shoot(shooter, hopper))
-    //     .onFalse(new InstantCommand(shooter::enableAutomaticFlywheelUpdate));
+    new Trigger(() -> driverController.getRightBumperButton())
+        .toggleOnTrue(new InstantCommand(intake::togglePivit));
 
 
     new Trigger(() -> driverController.getLeftTrigger())

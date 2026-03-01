@@ -114,6 +114,14 @@ public class Intake extends SubsystemBase {
         }
     }
 
+    public void togglePivit() {
+        if (this.pivitCurrentPosition > 0.8) {
+            this.pivitTargetPosition = 0;
+        } else {
+            this.pivitTargetPosition = 1.1;
+        }
+    }
+
     // Linear interpolate the pivit position between zero and one with the motor rotations of up and down on the pivit
     public double pivitPositionToMotorPosition(double pivitPosition) {
         return Constants.INTAKE_PIVIT_MOTOR_POSITION_UP + ((Constants.INTAKE_PIVIT_MOTOR_POSITION_DOWN - Constants.INTAKE_PIVIT_MOTOR_POSITION_UP) * pivitPosition);
