@@ -7,25 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "true straight path"
+            "pathName": "Trench to middle 1"
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "startShooter"
+            "pathName": "Middle 1 to under trench"
           }
         },
         {
-          "type": "wait",
+          "type": "path",
           "data": {
-            "waitTime": 4.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "stopShooter"
+            "pathName": "Under trench to shot 1"
           }
         }
       ]

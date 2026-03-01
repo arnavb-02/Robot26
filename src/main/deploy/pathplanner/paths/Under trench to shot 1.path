@@ -3,35 +3,42 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.137,
-        "y": 5.944756820877817
+        "x": 4.762502965606615,
+        "y": 0.6512336892063957
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.229989685328834,
-        "y": 5.916289249408511
+        "x": 3.180901542111507,
+        "y": 0.4145314353499395
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Trench Bottom 1"
     },
     {
       "anchor": {
-        "x": 2.137,
-        "y": 5.944756820877817
+        "x": 2.2771293001186246,
+        "y": 1.6625978647686828
       },
       "prevControl": {
-        "x": 1.6301950446002782,
-        "y": 6.004561042392791
+        "x": 2.6214234875444857,
+        "y": 1.5227283511269276
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "straightogend"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Shoot(temporary)",
+      "waypointRelativePos": 0.0,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 0.75,
     "maxAcceleration": 1.0,
@@ -42,13 +49,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 39.36931724236472
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
-    "velocity": 0,
-    "rotation": 180.0
+    "velocity": 2.0,
+    "rotation": -0.7345210342547683
   },
   "useDefaultConstraints": true
 }
