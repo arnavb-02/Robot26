@@ -1,7 +1,9 @@
 package Team4450.Robot26.subsystems;
 
 import Team4450.Robot26.Constants;
+import Team4450.Robot26.RobotContainer;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -10,6 +12,7 @@ import gg.questnav.questnav.PoseFrame;
 import gg.questnav.questnav.QuestNav;
 import Team4450.Lib.Util;
 import Team4450.Robot26.utility.ConsoleEveryX;
+import edu.wpi.first.math.geometry.Pose2d;
 
 public class QuestNavSubsystem extends SubsystemBase {
     private boolean hasQuest;
@@ -17,6 +20,7 @@ public class QuestNavSubsystem extends SubsystemBase {
     private Transform3d ROBOT_TO_QUEST = new Transform3d(Constants.ROBOT_TO_QUEST.getX(), Constants.ROBOT_TO_QUEST.getY(), Constants.ROBOT_TO_QUEST.getZ(), Constants.ROBOT_TO_QUEST.getRotation());
     
     final Pose3d nullPose = new Pose3d(-1, -1, -1, Rotation3d.kZero);
+    final Pose2d nullPose2d = new Pose2d(-1, -1, Rotation2d.kZero);
     final Pose3d zeroPose = new Pose3d(0, 0, 0, Rotation3d.kZero);
 
     private ConsoleEveryX questTestLogger = new ConsoleEveryX("Quest Test Logger", 100);
@@ -93,10 +97,15 @@ public class QuestNavSubsystem extends SubsystemBase {
             // If the x or y difference from the robots current pose to the limelight estimate pose update the current quest estimate for the position
             SmartDashboard.putBoolean("Quest Connected", true);
             if (resetTimer > 200) {
-                if (Math.abs(drivebase.getPose().getX() - drivebase.limelightPoseEstimate.getX()) > Constants.LIMELIGHT_QUEST_ERROR_AMOUNT_METERS || Math.abs(drivebase.getPose().getX() - drivebase.limelightPoseEstimate.getY()) > Constants.LIMELIGHT_QUEST_ERROR_AMOUNT_METERS) {
-                    Pose3d limelightEstimatePose = new Pose3d(drivebase.limelightPoseEstimate);
-                    resetQuestOdometry(limelightEstimatePose);
-                    Util.consoleLog("Updated quest odomety to pose: ", limelightEstimatePose.toString());
+                if (RobotContainer.visionSubsystem.frontLimelightSee || RobotContainer.visionSubsystem.rightLimelightSee) {
+                    if (Math.abs(drivebase.getPose().getX() - drivebase.limelightPoseEstimate.getX()) > Constants.LIMELIGHT_QUEST_ERROR_AMOUNT_METERS || Math.abs(drivebase.getPose().getX() - drivebase.limelightPoseEstimate.getY()) > Constants.LIMELIGHT_QUEST_ERROR_AMOUNT_METERS) {
+                        Pose3d limelightEstimatePose = new Pose3d(drivebase.limelightPoseEstimate);
+                        resetQuestOdometry(limelightEstimatePose);
+                        Util.consoleLog("Updated quest odomety to pose: ", limelightEstimatePose.toString());
+                        drivebase.limelightPoseEstimate = nullPose2d;
+                        resetTimer = 0;
+                    }
+                } else {
                     resetTimer = 0;
                 }
             } else {

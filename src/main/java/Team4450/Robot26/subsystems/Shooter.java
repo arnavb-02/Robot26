@@ -76,6 +76,8 @@ public class Shooter extends SubsystemBase {
 
     private boolean disableAutomaticFlywheelUpdate = false;
 
+    private boolean enabledHood = false;
+
     private double sd_kP, sd_kI, sd_kD;
     private double sd_kS, sd_kV, sd_kA;
 
@@ -133,6 +135,7 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putBoolean(Constants.ShooterKeys.DISABLE_AUTO_FLYWHEEL_UPDATE, this.disableAutomaticFlywheelUpdate);
 
         SmartDashboard.putNumber("Hood Voltage Test", 0);
+        this.enabledHood = false;
     }
 
     @Override
@@ -147,7 +150,11 @@ public class Shooter extends SubsystemBase {
 
         hoodMotorPosition = hoodLeft.getPosition().getValueAsDouble();
 
-        updateHoodPosition(SmartDashboard.getNumber(Constants.ShooterKeys.HOOD_TARGET_POSITION, 0));
+        if (this.enabledHood) {
+            updateHoodPosition(SmartDashboard.getNumber(Constants.ShooterKeys.HOOD_TARGET_POSITION, 0));
+        } else {
+            updateHoodPosition(0);
+        }
         
         SmartDashboard.putNumber(Constants.ShooterKeys.HOOD_ANGLE, getHoodMotorAngleRadians());
         SmartDashboard.putNumber(Constants.ShooterKeys.HOOD_MOTOR_POSITION, getHoodMotorPosition());
@@ -241,13 +248,30 @@ public class Shooter extends SubsystemBase {
 
         if (interpolate) {
             if (!SmartDashboard.getBoolean(Constants.ShooterKeys.DISABLE_AUTO_FLYWHEEL_UPDATE, this.disableAutomaticFlywheelUpdate)) {
-                this.targetRPM = interpolateFlywheelSpeedByDistance(distToGoal);
+                this.targetRPM = interpolateTableByDistance(distToGoal, Constants.FLYWHEEL_SPEED_TABLE);
                 SmartDashboard.putNumber(Constants.ShooterKeys.FLYWHEEL_TARGET_RPM, this.targetRPM);
-                SmartDashboard.putNumber(Constants.ShooterKeys.HOOD_TARGET_POSITION, interpolateHoodByDistance(distToGoal));
+                SmartDashboard.putNumber(Constants.ShooterKeys.HOOD_TARGET_POSITION, interpolateTableByDistance(distToGoal, Constants.HOOD_ARC_TABLE));
             } else {
                 this.targetRPM = SmartDashboard.getNumber(Constants.ShooterKeys.FLYWHEEL_TARGET_RPM, targetRPM);
             }
         }   
+    }
+
+    public boolean flywheelAtSpeed() {
+        // Change to a constant at some point
+        if (Math.abs(this.currentRPM - this.targetRPM) < 140) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void enabledHood() {
+        this.enabledHood = true;
+    }
+
+    public void distableHood() {
+        this.enabledHood = false;
     }
 
     public Pose2d getGoalPose() {
@@ -260,6 +284,20 @@ public class Shooter extends SubsystemBase {
         } else {
             return null; // Error
         }
+    }
+
+    public void disableAutomaticFlywheelUpdate() {
+        disableAutomaticFlywheelUpdate = true;
+    }
+
+    public void enableAutomaticFlywheelUpdate() {
+        disableAutomaticFlywheelUpdate = false;
+    }
+
+    public void nameThisBetter() {
+        this.targetRPM = interpolateTableByDistance(3, FLYWHEEL_SPEED_TABLE);
+        SmartDashboard.putNumber(Constants.ShooterKeys.FLYWHEEL_TARGET_RPM, this.targetRPM);
+        SmartDashboard.putNumber(Constants.ShooterKeys.HOOD_TARGET_POSITION, interpolateTableByDistance(3, HOOD_ARC_TABLE));
     }
 
     public double getAngleToFaceGoalDegrees(Pose2d robotPosition) {
@@ -275,7 +313,7 @@ public class Shooter extends SubsystemBase {
 
     // This method sets the lower and higher points to interpolate between 
     // Based on the hardcoded flywheel speed & distance tables and the robots current distance away from the goal
-    public double interpolateFlywheelSpeedByDistance(double distToGoal) {
+    public double interpolateTableByDistance(double distToGoal, double[] table) {
         
         double lowerPoint = FLYWHEEL_SPEED_DISTANCE_TABLE[0];
         int lowerPointIndex = 0;
@@ -285,7 +323,7 @@ public class Shooter extends SubsystemBase {
 
         double currentDistance;
 
-        for (int i = FLYWHEEL_SPEED_DISTANCE_TABLE.length - 2; i > 0; i--){
+        for (int i = FLYWHEEL_SPEED_DISTANCE_TABLE.length - 2; i > 0; i--) {
             currentDistance = FLYWHEEL_SPEED_DISTANCE_TABLE[i];
             if(currentDistance > distToGoal){
                 if (currentDistance <= higherPoint) {
@@ -298,43 +336,11 @@ public class Shooter extends SubsystemBase {
                     lowerPointIndex = i;
                 }
             }else if (currentDistance == distToGoal){
-                return FLYWHEEL_SPEED_TABLE[i];
+                return table[i];
             }
         }
-        double lowerSpeed = FLYWHEEL_SPEED_TABLE[lowerPointIndex];
-        double higherSpeed = FLYWHEEL_SPEED_TABLE[higherPointIndex];
-
-        return linearInterpolate(lowerSpeed, higherSpeed, (distToGoal - lowerPoint) / (higherPoint - lowerPoint));
-    }
-
-    public double interpolateHoodByDistance(double distToGoal) {
-        
-        double lowerPoint = FLYWHEEL_SPEED_DISTANCE_TABLE[0];
-        int lowerPointIndex = 0;
-
-        double higherPoint = FLYWHEEL_SPEED_DISTANCE_TABLE[FLYWHEEL_SPEED_DISTANCE_TABLE.length - 1];
-        int higherPointIndex = FLYWHEEL_SPEED_DISTANCE_TABLE.length - 1;
-
-        double currentDistance;
-
-        for (int i = FLYWHEEL_SPEED_DISTANCE_TABLE.length - 2; i > 0; i--){
-            currentDistance = HOOD_ARC_TABLE[i];
-            if(currentDistance > distToGoal){
-                if (currentDistance <= higherPoint) {
-                    higherPoint = currentDistance;
-                    higherPointIndex = i;
-                }
-            }else if (currentDistance < distToGoal){
-                if (currentDistance >= lowerPoint) {
-                    lowerPoint = currentDistance;
-                    lowerPointIndex = i;
-                }
-            }else if (currentDistance == distToGoal){
-                return HOOD_ARC_TABLE[i];
-            }
-        }
-        double lowerSpeed = HOOD_ARC_TABLE[lowerPointIndex];
-        double higherSpeed = HOOD_ARC_TABLE[higherPointIndex];
+        double lowerSpeed = table[lowerPointIndex];
+        double higherSpeed = table[higherPointIndex];
 
         return linearInterpolate(lowerSpeed, higherSpeed, (distToGoal - lowerPoint) / (higherPoint - lowerPoint));
     }

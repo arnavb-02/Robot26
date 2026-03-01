@@ -142,6 +142,7 @@ public class Drivebase extends SubsystemBase {
     // See this function for more information.
     updateModulePoses(sdsDrivebase);
 
+    SmartDashboard.putString("Limelight Pose Estimate", this.limelightPoseEstimate.toString());
     // Basic telemetry
     SmartDashboard.putNumber("Gyro angle", getYaw());
     SmartDashboard.putString("Robot od pose", getODPose().toString());

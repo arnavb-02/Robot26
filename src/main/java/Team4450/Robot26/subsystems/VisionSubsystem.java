@@ -6,6 +6,8 @@ import Team4450.Robot26.utility.RobotOrientation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.lang.Math;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 
 public class VisionSubsystem extends SubsystemBase {
     // Info from: https://docs.limelightvision.io/docs/docs-limelight/pipeline-apriltag/apriltags
@@ -34,6 +36,9 @@ public class VisionSubsystem extends SubsystemBase {
     //
     Drivebase drivebase;
     boolean enabled = true;
+
+    public boolean frontLimelightSee = false;
+    public boolean rightLimelightSee = false;
 
     public VisionSubsystem(Drivebase drivebase) {
 
@@ -117,6 +122,7 @@ public class VisionSubsystem extends SubsystemBase {
                 }
             }
 
+            SmartDashboard.putNumber("Front Limelight numTags", numTags);
             if (numTags < 2) {
                 useLeftLimelight = false;
             }
@@ -124,8 +130,10 @@ public class VisionSubsystem extends SubsystemBase {
             if (useLeftLimelight) {
                 SmartDashboard.putBoolean("Send Front Limelight info", true);
                 drivebase.addLimelightMeasurement(front_mt2.pose, front_mt2.timestampSeconds);
+                this.frontLimelightSee = true;
             } else {
                 SmartDashboard.putBoolean("Send Front Limelight info", false);
+                this.frontLimelightSee = false;
             }
         }
 
@@ -151,15 +159,13 @@ public class VisionSubsystem extends SubsystemBase {
                 useRightLimelight = false;
             }
 
-            if (right_mt2.rawFiducials.length < 2) {
-                useRightLimelight = false;
-            }
-
             if (useRightLimelight) {
                 SmartDashboard.putBoolean("Send Right Limelight info", true);
                 drivebase.addLimelightMeasurement(right_mt2.pose, right_mt2.timestampSeconds);
+                this.rightLimelightSee = true;
             } else {
                 SmartDashboard.putBoolean("Send Right Limelight info", false);
+                this.rightLimelightSee = false;
             }
         }
 

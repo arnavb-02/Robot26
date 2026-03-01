@@ -11,7 +11,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
-
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.CANBus;
 
 public class Intake extends SubsystemBase {
@@ -68,18 +68,14 @@ public class Intake extends SubsystemBase {
         pivitCFG.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
         // Slot 0 PID
-        pivitCFG.Slot0.kP = 0.00002;
+        pivitCFG.Slot0.kP = 15;
         pivitCFG.Slot0.kI = 0;
         pivitCFG.Slot0.kD = 0;
 
         // Slot 0 Feedforward (Talon internal)
-        pivitCFG.Slot0.kS = 0; 
+        pivitCFG.Slot0.kS = 0.5; 
         pivitCFG.Slot0.kV = 0;
         pivitCFG.Slot0.kA = 0;
-
-        // Motion Magic acceleration limits
-        pivitCFG.MotionMagic.MotionMagicAcceleration = 2;
-        pivitCFG.MotionMagic.MotionMagicJerk = 0;
 
         this.pivitMotor.getConfigurator().apply(pivitCFG);
 
@@ -100,8 +96,7 @@ public class Intake extends SubsystemBase {
             // Convert position input to rotations for the motor
             // double power = Constants.INTAKE_PIVIT_MOTOR_POWER;
             
-            MotionMagicVoltage req = new MotionMagicVoltage(this.pivitTargetPositionMotorPosition);
-
+            PositionVoltage req = new PositionVoltage(this.pivitTargetPositionMotorPosition);
 
             this.pivitMotor.setControl(req);
 
