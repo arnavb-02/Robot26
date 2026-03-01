@@ -5,36 +5,40 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class StopIntake extends Command {
-  private Intake intake;
+    private Intake intake;
 
-  private State state;
+    private State state;
 
-  private static enum State {
-    STOPPING, STOPPED, END
-  };
+    private static enum State {
+        STOPPING, STOPPED, END
+    };
 
-  public StopIntake(Intake intake) {
-    this.intake = intake;
-  }
+    public StopIntake(Intake intake) {
+        this.intake = intake;
+    }
 
-  public void initialize() {
-    state = State.STOPPING;
+    @Override
+    public void initialize() {
+        state = State.STOPPING;
 
-  }
+    }
 
-  public void execute() {
-    state = State.STOPPED;
-    intake.stopIntake();
-    end();
-  }
+    @Override
+    public void execute() {
+        state = State.STOPPED;
+        intake.stopIntake();
+        end(false);
+    }
 
-  public boolean isFinished() {
-    return state == State.END;
+    @Override
+    public boolean isFinished() {
+        return state == State.END;
 
-  }
+    }
 
-  public void end() {
-    SmartDashboard.putString("Intake Stopped?", "Yup");
+    @Override
+    public void end(boolean inturrupted) {
+        SmartDashboard.putString("Intake Stopped?", "Yup");
 
-  }
+    }
 }

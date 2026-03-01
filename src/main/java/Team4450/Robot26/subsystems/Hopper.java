@@ -28,15 +28,11 @@ public class Hopper extends SubsystemBase {
 
         this.hopperMotor.getConfigurator().apply(hopperCFG);
 
-        SmartDashboard.putNumber("Hopper Power", Constants.HOPPER_MOTOR_POWER);
-        SmartDashboard.putNumber("Hopper Current", getHooperCurrent());
-
         hopperMotor.set(0);
     }
 
     public void start() {
-        double power = SmartDashboard.getNumber("Hopper Power", Constants.HOPPER_MOTOR_POWER);
-        hopperMotor.set(power);
+        hopperMotor.set(1);
     }
 
     public void startSlow() {

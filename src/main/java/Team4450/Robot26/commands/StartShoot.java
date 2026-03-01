@@ -6,26 +6,30 @@ import Team4450.Robot26.subsystems.Hopper;
 
 public class StartShoot extends Command {
 
-  Shooter shooter;
-  Hopper hopper;
+    Shooter shooter;
+    Hopper hopper;
 
-  public StartShoot(Shooter shooter, Hopper hopper) {
-    this.shooter = shooter;
-    this.hopper = hopper;
-  }
+    public StartShoot(Shooter shooter, Hopper hopper) {
+        this.shooter = shooter;
+        this.hopper = hopper;
+    }
 
-  public void initialize() {
-    shooter.flywheelEnabled = true;
-  }
+    @Override
+    public void initialize() {
+        shooter.flywheelEnabled = true;
+    }
 
-  public void execute() {
-    hopper.start();
-  }
+    @Override
+    public void execute() {
+        hopper.start();
+    }
 
-  public boolean isFinished() {
-    return shooter.flywheelEnabled == true;
-  }
+    @Override
+    public boolean isFinished() {
+        return shooter.flywheelEnabled == true;
+    }
 
-  public void end() {
-  }
+    @Override
+    public void end(boolean inturrupted) {
+    }
 }

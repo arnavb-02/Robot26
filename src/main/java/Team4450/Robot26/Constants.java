@@ -70,7 +70,7 @@ public final class Constants {
     public static int SHOOTER_UPPER_BEAM_BREAK_PORT = 3;
 
     public static int SHOOTER_FLYWHEEL_CURRENT_LIMIT = 35;
-    public static int SHOOTER_INFEED_CURRENT_LIMIT = 30;
+    public static int SHOOTER_INFEED_CURRENT_LIMIT = 35;
     public static int SHOOTER_HOOD_CURRENT_LIMIT = 5;
     public static int INTAKE_CURRENT_LIMIT = 20;
     public static int INTAKE_PIVIT_CURRENT_LIMIT = 5;
@@ -180,9 +180,9 @@ public final class Constants {
     public static boolean HUB_TRACKING = false;
 
     // Interpolation table
-    public static double[] FLYWHEEL_SPEED_TABLE = {3500, 3500, 3750, 3850, 4250, 4400}; // Converted from percentages to RPM
+    public static double[] FLYWHEEL_SPEED_TABLE = {3550, 3650, 3850, 3850, 4300, 4400}; // Converted from percentages to RPM
     public static double[] FLYWHEEL_SPEED_DISTANCE_TABLE = {2, 2.5, 3, 3.5, 4, 4.5};
-    public static double[] HOOD_ARC_TABLE = {0.9, 1.65, 1.8, 1.85, 1.85, 1.9};
+    public static double[] HOOD_ARC_TABLE = {0.9, 1.65, 1.8, 1.85, 1.85, 2.3};
 
     public static double[] FUEL_AIR_TIME_TABLE_SEC = {0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6};
 
@@ -223,8 +223,6 @@ public final class Constants {
 
     // Hopper motor constants
     public static final int HOPPER_MOTOR_CAN_ID = 12; // Example CAN ID for the Kraken X60 motor
-    public static final double HOPPER_MOTOR_SPEED_RPM = 1000.0; // Default speed in RPM
-    public static final double HOPPER_MOTOR_POWER = 1;
 
     public static final int INTAKE_DEFAULT_TARGET_RPM = 4500;
     // PID constants for Intake

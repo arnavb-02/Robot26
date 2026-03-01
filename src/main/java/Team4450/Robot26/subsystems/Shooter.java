@@ -259,7 +259,8 @@ public class Shooter extends SubsystemBase {
 
     public boolean flywheelAtSpeed() {
         // Change to a constant at some point
-        if (Math.abs(this.currentRPM - this.targetRPM) < 140) {
+        //
+        if (Math.abs(this.currentRPM - this.targetRPM) < 150) {
             return true;
         } else {
             return false;
@@ -351,7 +352,7 @@ public class Shooter extends SubsystemBase {
 
     
     public void updateHoodPosition(double pos) {
-        PositionVoltage req = new PositionVoltage(pos);
+        PositionVoltage req = new PositionVoltage(Math.min(pos, Constants.HOOD_ARC_TABLE[HOOD_ARC_TABLE.length - 1]));
 
         this.hoodLeft.setControl(req);
         this.hoodRight.setControl(new Follower(this.hoodLeft.getDeviceID(), MotorAlignmentValue.Opposed));
