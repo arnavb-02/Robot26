@@ -271,4 +271,13 @@ public class Intake extends SubsystemBase {
         this.intakeMotorLeft.set(newRPM / Constants.INTAKE_MAX_THEORETICAL_RPM);
         this.intakeMotorRight.setControl(new Follower(this.intakeMotorLeft.getDeviceID(), MotorAlignmentValue.Opposed));
     }
+
+    public void setIntakeRPMWithScaling(double targetRPM) {
+        double currentRPM = getIntakeRPM();
+        double error = targetRPM - currentRPM;
+        double adjustment = Constants.INTAKE_kP * error; // Adjustment to approach target
+        double newRPM = (targetRPM + adjustment) * robotContainer.getVolatgePercent() * Constants.INTAKE_VOLTAGE_MULTIPLIER; // Adjust current RPM towards target
+        this.intakeMotorLeft.set(newRPM / Constants.INTAKE_MAX_THEORETICAL_RPM);
+        this.intakeMotorRight.setControl(new Follower(this.intakeMotorLeft.getDeviceID(), MotorAlignmentValue.Opposed));
+    }
 }

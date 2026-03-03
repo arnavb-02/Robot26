@@ -404,7 +404,54 @@ public class RobotContainer {
 
 	// 	new Trigger(() -> driverController.getYButton())
 	// 		.onTrue(new InstantCommand(drivebase::driveToOrigin));
-	}
+
+  // Shoot without driver control
+  // new Trigger(() -> driverController.getXButton())
+  //       .onTrue(new InstantCommand(drivebase::toggleHubTracking))
+  //       .onTrue(new InstantCommand(drivebase::stopHumanDriving))
+  //       .onTrue(new InstantCommand(shooter::enableAutomaticFlywheelUpdate))
+  //       .onTrue(new InstantCommand(shooter::enabledHood))
+
+  //       .whileTrue(new Shoot(shooter, hopper))
+
+  //       .onFalse(new InstantCommand(drivebase::toggleHubTracking))
+  //       .onFalse(new InstantCommand(drivebase::startHumanDriving))
+  //       .onFalse(new InstantCommand(shooter::disableAutomaticFlywheelUpdate))
+  //       .onFalse(new InstantCommand(shooter::distableHood));
+
+  // Shoot with driver control
+  // new Trigger(() -> driverController.getXButton())
+  //     .onTrue(new InstantCommand(drivebase::toggleHubTracking))
+  //     .onTrue(new InstantCommand(shooter::enableAutomaticFlywheelUpdate))
+  //     .onTrue(new InstantCommand(shooter::enabledHood))
+      
+  //     .whileTrue(new Shoot(shooter, hopper))
+
+  //     .onFalse(new InstantCommand(drivebase::toggleHubTracking))
+  //     .onFalse(new InstantCommand(shooter::disableAutomaticFlywheelUpdate))
+  //     .onFalse(new InstantCommand(shooter::distableHood));
+
+  // Ferry from middle
+  // new Trigger(() -> driverController.getXButton())
+  //     .onTrue(new InstantCommand(drivebase::toggleHubTracking))
+  //     .onTrue(new InstantCommand(shooter::enableAutomaticFlywheelUpdate))
+  //     .onTrue(new InstantCommand(shooter::enabledHood))
+  //     .onTrue(new InstantCommand(drivebase::driveToNearestOpening))
+      
+  //     .whileTrue(new Shoot(shooter, hopper))
+
+  //     .onFalse(new InstantCommand(drivebase::toggleHubTracking))
+  //     .onFalse(new InstantCommand(shooter::disableAutomaticFlywheelUpdate))
+  //     .onFalse(new InstantCommand(shooter::distableHood))
+  //.    .onFalse(new InstantCommand(drivebase::disableAutoDriving));
+  
+  // Prepare for shooting
+  // new Trigger(() -> driverController.getXButton())
+  //     .onTrue(new InstantCommand(drivebase::toggleHubTracking))
+  //     .onTrue(new InstantCommand(drivebase::toggleSlowMode))
+  //     .onTrue(new InstantCommand(shooter::enableAutomaticFlywheelUpdate))
+  //     .onTrue(new InstantCommand(shooter::enabledHood));
+}
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

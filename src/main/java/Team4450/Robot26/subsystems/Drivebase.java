@@ -6,6 +6,8 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -68,6 +70,7 @@ public class Drivebase extends SubsystemBase {
     private double maxSpeed = kMaxSpeed * kDriveReductionPct;
     private double maxRotRate = kMaxAngularRate * kRotationReductionPct;
     private boolean driverControlled = true;
+    private boolean slowFortrench = false;
 
     private final SwerveRequest.SwerveDriveBrake driveBrake = new SwerveRequest.SwerveDriveBrake();
 
@@ -157,6 +160,13 @@ public class Drivebase extends SubsystemBase {
         }
         SmartDashboard.putNumber("DriveBase Current", getDrivetrainCurrent());
 
+        if (willEnterTrench() && !slowFortrench){
+            toggleSlowMode();
+            slowFortrench = true;
+        } else if (!willEnterTrench() && slowFortrench){
+            toggleSlowMode();
+        }
+
 
     }
 
@@ -182,15 +192,21 @@ public class Drivebase extends SubsystemBase {
         SmartDashboard.putNumber("Drive Rot Rate", driveField.RotationalRate);
     }
 
-    public void driveToOrigin(){
-        driveToPose(new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0.0)), 0.0);
+    public void driveToNearestOpening(){
+        double targetY = robotPose.getY();
+        if (robotPose.getY() >= 1.7 && robotPose.getY() <= 4){
+            targetY = 1.6;
+        } else if (robotPose.getY() > 4 && robotPose.getY() <= 6.3){
+            targetY = 6.4;
+        }
+        // driveToPose(new Pose2d(robotPose.getX(), targetY, Rotation2d.fromDegrees(0.0)), 0.0);
     }
 
     public void driveToPose(Pose2d targetPose, double targetEndVelocity){
         createPathfindingCommand(targetPose, targetEndVelocity).execute();
     }
 
-    public void stopAutoDriving(){
+    public void disableAutoDriving(){
         
     }
 
@@ -480,6 +496,76 @@ public class Drivebase extends SubsystemBase {
         double distance = Math.hypot(deltaX, deltaY);
 
         return distance;
+    }
+
+    public boolean willCrashTrench() {
+       double velocityX = driveField.VelocityX;
+       double velocityY = driveField.VelocityY;
+       double bufferTime = 0.05;
+
+       double predictionX = robotPose.getX() + (velocityX * bufferTime);
+       double predictionY = robotPose.getY() + (velocityY * bufferTime);
+
+       //left right 
+       double xTolerance = 0.5;
+       double yTolerance = 0.2;
+
+        // only ever false if goal is to go under the trench
+       // units: meter
+       // blue side 
+        if (4 - xTolerance < predictionX && predictionX < 5.2 + xTolerance) { // between the blue x values for trench
+            if (0 + yTolerance < predictionY && predictionY < 1.2 - yTolerance) { // between the y values for trench near 0
+                return false;
+            }
+            if (6.8 + yTolerance < predictionY && predictionY < 8.07 - yTolerance){ // between the y values for trench far from 0
+                return false;
+            } else return true;
+
+            //red side
+        } else if ( 11.3 - xTolerance < predictionX && predictionX < 12.5 + xTolerance) { // between the red x values for trench
+            if (0 + yTolerance < predictionY && predictionY < 1.2 - yTolerance) { // between the y values for trench near 0
+                return false;
+            }
+            if (6.8 + yTolerance < predictionY && predictionY < 8.07 - yTolerance){ // between the y values for trench far from 0
+                return false;
+            } else return true;
+
+        } else return false;
+    }
+
+    public boolean willEnterTrench() {
+       double velocityX = driveField.VelocityX;
+       double velocityY = driveField.VelocityY;
+       double bufferTime = 0.05;
+
+       double predictionX = robotPose.getX() + (velocityX * bufferTime);
+       double predictionY = robotPose.getY() + (velocityY * bufferTime);
+
+       //left right 
+       double xTolerance = 0.5;
+       double yTolerance = 0.2;
+
+        // only ever true if prediction is under the trench
+        // units: meter
+        // blue side 
+        if (4 - xTolerance < predictionX && predictionX < 5.2 + xTolerance) { // between the blue x values for trench
+            if (0 + yTolerance < predictionY && predictionY < 1.2 - yTolerance) { // between the y values for trench near 0
+                return true;
+            }
+            if (6.8 + yTolerance < predictionY && predictionY < 8.07 - yTolerance){ // between the y values for trench far from 0
+                return true;
+            } else return false;
+
+            //red side
+        } else if ( 11.3 - xTolerance < predictionX && predictionX < 12.5 + xTolerance) { // between the red x values for trench
+            if (0 + yTolerance < predictionY && predictionY < 1.2 - yTolerance) { // between the y values for trench near 0
+                return true;
+            }
+            if (6.8 + yTolerance < predictionY && predictionY < 8.07 - yTolerance){ // between the y values for trench far from 0
+                return true;
+            } else return false;
+
+        } else return false;
     }
 
     /**
